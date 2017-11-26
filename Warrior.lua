@@ -109,3 +109,13 @@ local function Combat()
         return cast(SB.Slam,target)
       end
     end
+
+    -- Overpower if nothing else is a priority
+    if castable(SB.Overpower,target) then
+      return cast(SB.Overpower,target)
+    end
+
+    -- Bladestorm if we don't have the 4pc
+    if T20parts < 4 and castable(SB.Bladestorm,target) then
+      return cast(SB.Bladestorm,target)
+    end
