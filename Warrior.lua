@@ -1,6 +1,7 @@
 if tier20 == nil then tier20 = {} end
 tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
 
+-- returns how many parts items we have
 local function T20parts()
   equipeditems = 0
   for i=1, tier20[] do
@@ -40,6 +41,20 @@ local function Combat()
       castable(SB.Warbreaker,target)
       then
         return cast(SB.Warbreaker,target)
+      end
+    end
+
+    -- Checks for FocusedRage 
+    if player.talent(6,3) then
+      if player.buff(AB.FocusedRageArm).count < 3 then
+        if not player.spell(SB.ColossusSmash).cooldown == 0 and
+        player.buff(227266).up and (player.power.rage >= 130 or
+        target.debuff(AB.ColossusSmash).down or player.talent(7,1) and
+        player.spell(SB.BattleCry).cooldown <= 8) and
+        castable(SB.FocusedRageArm,target)
+        then
+          return cast(SB.FocusedRageArm,target)
+        end
       end
     end
 
