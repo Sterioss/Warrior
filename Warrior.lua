@@ -21,7 +21,7 @@ local function Combat()
     
     -- If we have the head or the 4pc and we're bursting - cast BS
     if player.buff(BattleCry).up and
-    (equipeditems >= 4 or itemequipped(TheGreatStormsEye))
+    (T20parts >= 4 or itemequipped(TheGreatStormsEye))
     and castable(Bladestorm,target) then
       return cast(Bladestorm,target)
     end
