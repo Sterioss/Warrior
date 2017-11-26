@@ -29,10 +29,12 @@ local function Combat()
     end
 
     -- If we don't have the Shattered buff - cast CS
-    if player.buff(AB.ShatteredDefenses).down
-    and castable(SB.ColossusSmash,target)
-    then
-      return cast(SB.ColossusSmash,target)
+    if player.buff(AB.ShatteredDefenses).down then
+      if castable(SB.ColossusSmash,target) then
+      then
+        return cast(SB.ColossusSmash,target)
+      end
+      --if
     end
 
     -- If rend remaining time is under 2.4 or we're about to burst - cast rend
@@ -81,15 +83,17 @@ local function Combat()
 
     -- refreshing Rend on next gcd if it's close to end
     if player.talent(3,2) then
-      if target.debuff(AB.Rend).duration <= 2.4 then
+      if target.debuff(AB.Rend).duration <= 2.4 and castable(SB.Rend,target)
+      then
         return cast(SB.Rend,target)
       end
     end
 
     -- cast slam when we don't have FoB have 52rage, not rend or not ravager
     if not player.talent(5,1) --[[ check for WW targets = 1 ]] then
-      if player.power.rage >= 52 or not player.talent(3,2)
-      or not player.talent(7,3) then
+      if (player.power.rage >= 52 or not player.talent(3,2)
+      or not player.talent(7,3)) and castable(SB.Slam,target)
+      then
         return cast(SB.Slam,target)
       end
     end
