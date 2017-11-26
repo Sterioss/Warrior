@@ -14,45 +14,55 @@ local function T20parts()
 end
 
 local function Combat()
--- If we have something we can attack
+  -- If we have something we can attack
   if UnitCanAttack('player', target) and player.inmelee and
    target.infront(target,180) and target.alive
   then
 
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
-      if player.buff(BattleCry).up and
+      if player.buff(AB.BattleCry).up and
       (T20parts >= 4 or itemequipped(TheGreatStormsEye))
-      and castable(Bladestorm,target) then
-        return cast(Bladestorm,target)
+      and castable(SB.Bladestorm,target) then
+        return cast(SB.Bladestorm,target)
       end
     end
 
     -- If we don't have the Shattered buff - cast CS
-    if player.buff(ShatteredDefenses).down and castable(ColossusSmash,target)
+    if player.buff(AB.ShatteredDefenses).down
+    and castable(SB.ColossusSmash,target)
     then
-      return cast(ColossusSmash,target)
+      return cast(SB.ColossusSmash,target)
     end
 
     -- If rend remaining time is under 2.4 or we're about to burst - cast rend
     if player.talent(3,2) then
-      if (target.debuff(rend).duration <= player.GCD or
-      (target.debuff(rend).duration < 5 and
-      player.spell(BattleCry).cooldown < 2 and
-      (player.spell(Bladestorm).cooldown < 2 or T20parts >= 2)))
-      and castable(Rend,target)
+      if (target.debuff(AB.Rend).duration <= player.GCD or
+      (target.debuff(AB.Rend).duration < 5 and
+      player.spell(SB.BattleCry).cooldown < 2 and
+      (player.spell(SB.Bladestorm).cooldown < 2 or T20parts >= 2)))
+      and castable(SB.Rend,target)
       then
-        return cast(Rend,target)
+        return cast(SB.Rend,target)
       end
     end
+
+    -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
+    if player.talent(7,3) then
+      if player.spell(SB.BattleCry).cooldown <= player.spell(AB.GCD).cooldown
+      and target.debuff(AB.ColossusSmash) > 6 and castable(SB.Ravager,target)
+      then
+        return cast(SB.Ravager,target)
+      end
+    end
+
+    -- if player.itemequipped()
 
     -- If overpower is up and we're not bursting - cast overpower
     if player.talent(1,2) then
-      if player.buff(Overpower).up and player.buff(BattleCry).down
-      and castable(Overpower,target)
+      if player.buff(AB.Overpower).up and player.buff(AB.BattleCry).down
+      and castable(SB.Overpower,target)
       then
-        return cast(Overpower,target)
+        return cast(SB.Overpower,target)
       end
     end
-
-    
