@@ -1,5 +1,5 @@
 if tier20 == nil then tier20 = {} end
-tier20 { 147190, 147187, 147192, 147189, 147191, 147188, }
+tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
 
 local function T20parts()
   equipeditems = 0
