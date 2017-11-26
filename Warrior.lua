@@ -36,7 +36,7 @@ local function Combat()
     if (target.debuff(rend).duration <= player.GCD or
     (target.debuff(rend).duration < 5 and
     player.spell(BattleCry).cooldown < 2 and
-    (player.spell(Bladestorm).cooldown < 2 or equipeditems >= 2)))
+    (player.spell(Bladestorm).cooldown < 2 or T20parts >= 2)))
     and castable(Rend,target)
     then
       return cast(Rend,target)
