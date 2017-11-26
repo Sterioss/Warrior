@@ -28,13 +28,19 @@ local function Combat()
       end
     end
 
-    -- If we don't have the Shattered buff - cast CS
+    -- If we don't have the Shattered buff - cast CS or Warbreaker
     if player.buff(AB.ShatteredDefenses).down then
       if castable(SB.ColossusSmash,target) then
       then
         return cast(SB.ColossusSmash,target)
       end
-      --if
+      if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
+      player.spell(61304).cooldown) and (not player.talent(5,1) or
+      (player.talent(5,1) and target.debuff(AB.ColossusSmash) < player.gcd)) and
+      castable(SB.Warbreaker,target)
+      then
+        return cast(SB.Warbreaker,target)
+      end
     end
 
     -- If rend remaining time is under 2.4 or we're about to burst - cast rend
@@ -87,6 +93,12 @@ local function Combat()
       then
         return cast(SB.Rend,target)
       end
+    end
+
+    -- WhirlWind if we don't have the FoB talent
+    if player.talent(5,1) and --[[ check for WW targent > 1 ]]
+    castable(SB.WhirlWind,target) then
+      return cast(SB.WhirlWind,target)
     end
 
     -- cast slam when we don't have FoB have 52rage, not rend or not ravager
