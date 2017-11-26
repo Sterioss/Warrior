@@ -1,6 +1,5 @@
-if tier20 == nil then tier20 = {} end
-tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
-
+local engine = ...
+local tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
 -- returns how many parts items we have
 local function T20parts()
   equipeditems = 0
@@ -44,7 +43,7 @@ local function Combat()
       end
     end
 
-    -- Checks for FocusedRage 
+    -- Checks for FocusedRage
     if player.talent(6,3) then
       if player.buff(AB.FocusedRageArm).count < 3 then
         if not player.spell(SB.ColossusSmash).cooldown == 0 and
