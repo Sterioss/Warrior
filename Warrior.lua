@@ -22,7 +22,7 @@ local function Combat()
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
       if player.buff(AB.BattleCry).up and
-      (T20parts >= 4 or itemequipped(TheGreatStormsEye))
+      (T20parts >= 4 or itemequipped(IB.TheGreatStormsEye))
       and castable(SB.Bladestorm,target) then
         return cast(SB.Bladestorm,target)
       end
@@ -50,13 +50,19 @@ local function Combat()
     -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
     if player.talent(7,3) then
       if player.spell(SB.BattleCry).cooldown <= player.spell(AB.GCD).cooldown
-      and target.debuff(AB.ColossusSmash) > 6 and castable(SB.Ravager,target)
+      and target.debuff(AB.ColossusSmash).duration > 6
+      and castable(SB.Ravager,target)
       then
         return cast(SB.Ravager,target)
       end
     end
 
-    -- if player.itemequipped()
+    -- legendary ring buff up -> cast execute
+    if player.itemequipped(137052) then
+      if player.buff(225947).up and castable(SB.Execute,target) then
+        return cast(SB.Execute,target)
+      end
+    end
 
     -- If overpower is up and we're not bursting - cast overpower
     if player.talent(1,2) then
