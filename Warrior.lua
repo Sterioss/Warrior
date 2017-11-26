@@ -72,3 +72,9 @@ local function Combat()
         return cast(SB.Overpower,target)
       end
     end
+
+    -- casting MS if the buff's up
+    if player.buff(AB.ShatteredDefenses).up or player.buff(242188).down
+    and castable(12294,target) then
+      return cast(12294,target)
+    end
