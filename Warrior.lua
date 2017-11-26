@@ -78,3 +78,18 @@ local function Combat()
     and castable(12294,target) then
       return cast(12294,target)
     end
+
+    -- refreshing Rend on next gcd if it's close to end
+    if player.talent(3,2) then
+      if target.debuff(AB.Rend).duration <= 2.4 then
+        return cast(SB.Rend,target)
+      end
+    end
+
+    -- cast slam when we don't have FoB have 52rage, not rend or not ravager
+    if not player.talent(5,1) --[[ check for WW targets = 1 ]] then
+      if player.power.rage >= 52 or not player.talent(3,2)
+      or not player.talent(7,3) then
+        return cast(SB.Slam,target)
+      end
+    end
