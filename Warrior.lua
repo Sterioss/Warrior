@@ -1,28 +1,12 @@
 local engine = ...
-local tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
--- returns how many parts items we have
-local function T20parts()
-  equipeditems = 0
-  for i=1, tier20[] do
-    if tier20[i] ~= nill then
-      if itemequipped(tier20[i]) then
-        equipeditems + 1
-      end
-    end
-  end
-  return equipeditems
-end
-
-local function Combat()
-  -- If we have something we can attack
-  if UnitCanAttack('player', target) and player.inmelee and
-   target.infront(target,180) and target.alive
-  then
-
+local function combat()
+  local t20_2 = Tparts() >= 2
+  local t20_4 = Tparts() >= 4
+  if target.alive and target.enemy then
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
       if player.buff(AB.BattleCry).up and
-      (T20parts >= 4 or itemequipped(IB.TheGreatStormsEye))
+      (t20_4 or itemequipped(IB.TheGreatStormsEye))
       and castable(SB.Bladestorm,target) then
         return cast(SB.Bladestorm,target)
       end
@@ -31,7 +15,6 @@ local function Combat()
     -- If we don't have the Shattered buff - cast CS or Warbreaker
     if player.buff(AB.ShatteredDefenses).down then
       if castable(SB.ColossusSmash,target) then
-      then
         return cast(SB.ColossusSmash,target)
       end
       if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
@@ -47,7 +30,7 @@ local function Combat()
     if player.talent(6,3) then
       if player.buff(AB.FocusedRageArm).count < 3 then
         if not player.spell(SB.ColossusSmash).cooldown == 0 and
-        player.buff(227266).up and (player.power.rage >= 130 or
+        player.buff(227266).up and (player.power.rage.actual >= 130 or
         target.debuff(AB.ColossusSmash).down or player.talent(7,1) and
         player.spell(SB.BattleCry).cooldown <= 8) and
         castable(SB.FocusedRageArm,target)
@@ -57,12 +40,19 @@ local function Combat()
       end
     end
 
+    if target.debuff(AB.Rend).down and castable(SB.Rend,target) then
+      return cast(SB.Rend,target)
+    end
+
     -- If rend remaining time is under 2.4 or we're about to burst - cast rend
-    if player.talent(3,2) then
-      if (target.debuff(AB.Rend).duration <= player.GCD or
-      (target.debuff(AB.Rend).duration < 5 and
+    if player.talent(3,2) and target.debuff(AB.Rend).up then
+      if target.debuff(AB.Rend).cooldown <= player.spell(61304).duration
+      then
+        return cast(SB.Rend,target)
+      end
+      if target.debuff(AB.Rend).cooldown < 5 and
       player.spell(SB.BattleCry).cooldown < 2 and
-      (player.spell(SB.Bladestorm).cooldown < 2 or T20parts >= 2)))
+      (player.spell(SB.Bladestorm).cooldown < 2 or t20_2)
       and castable(SB.Rend,target)
       then
         return cast(SB.Rend,target)
@@ -80,7 +70,7 @@ local function Combat()
     end
 
     -- legendary ring buff up -> cast execute
-    if player.itemequipped(137052) then
+    if itemequipped(137052) then
       if player.buff(225947).up and castable(SB.Execute,target) then
         return cast(SB.Execute,target)
       end
@@ -117,7 +107,7 @@ local function Combat()
 
     -- cast slam when we don't have FoB have 52rage, not rend or not ravager
     if not player.talent(5,1) --[[ check for WW targets = 1 ]] then
-      if (player.power.rage >= 52 or not player.talent(3,2)
+      if (player.power.rage.actual >= 52 or not player.talent(3,2)
       or not player.talent(7,3)) and castable(SB.Slam,target)
       then
         return cast(SB.Slam,target)
@@ -130,6 +120,35 @@ local function Combat()
     end
 
     -- Bladestorm if we don't have the 4pc
-    if T20parts < 4 and castable(SB.Bladestorm,target) then
+    if not t20_4 and castable(SB.Bladestorm,target) then
       return cast(SB.Bladestorm,target)
     end
+  end
+end
+
+local function resting()
+  print(player.enemies(10))
+end
+
+local tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
+-- returns how many parts items we have
+
+
+local function Tparts()
+  local equipeditems = 0
+  for i=1, #tier20 do
+    if tier20[i] ~= nill then
+      if itemequipped(tier20[i]) then
+        equipeditems = equipeditems + 1
+      end
+    end
+  end
+  return equipeditems
+end
+
+return {
+    combat = combat,
+    resting = resting,
+    -- Version (major.minor.sub)
+    version = '1.0.0'
+  }
