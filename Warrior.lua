@@ -1,12 +1,12 @@
 local engine = ...
 local function combat()
-  local t20_2 = Tparts() >= 2
-  local t20_4 = Tparts() >= 4
+  --local t20_2 = Tparts() >= 2
+  --local t20_4 = Tparts() >= 4
   if target.alive and target.enemy then
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
       if player.buff(AB.BattleCry).up and
-      (t20_4 or itemequipped(IB.TheGreatStormsEye))
+      itemequipped(IB.TheGreatStormsEye)
       and castable(SB.Bladestorm,target) then
         return cast(SB.Bladestorm,target)
       end
@@ -52,7 +52,7 @@ local function combat()
       end
       if target.debuff(AB.Rend).cooldown < 5 and
       player.spell(SB.BattleCry).cooldown < 2 and
-      (player.spell(SB.Bladestorm).cooldown < 2 or t20_2)
+      (player.spell(SB.Bladestorm).cooldown < 2)
       and castable(SB.Rend,target)
       then
         return cast(SB.Rend,target)
@@ -120,7 +120,7 @@ local function combat()
     end
 
     -- Bladestorm if we don't have the 4pc
-    if not t20_4 and castable(SB.Bladestorm,target) then
+    if castable(SB.Bladestorm,target) then
       return cast(SB.Bladestorm,target)
     end
   end
@@ -130,11 +130,11 @@ local function resting()
   print(player.enemies(10))
 end
 
-local tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
+-- local tier20 = { 147190, 147187, 147192, 147189, 147191, 147188 }
 -- returns how many parts items we have
 
 
-local function Tparts()
+--[[local function Tparts()
   local equipeditems = 0
   for i=1, #tier20 do
     if tier20[i] ~= nill then
@@ -144,7 +144,7 @@ local function Tparts()
     end
   end
   return equipeditems
-end
+end --]]
 
 return {
     combat = combat,
