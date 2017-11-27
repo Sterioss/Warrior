@@ -20,7 +20,7 @@ local function combat()
         return cast(SB.ArcaneTorrent,target)
       end
     end
-    
+
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
       if player.buff(AB.BattleCry).up and
@@ -64,7 +64,7 @@ local function combat()
       then
         return cast(SB.Rend,target)
       end
-      if target.debuff(AB.Rend).duration < 5 and
+      if target.debuff(AB.Rend).cooldown < 5 and
       player.spell(SB.BattleCry).cooldown < 2 and
       (player.spell(SB.Bladestorm).cooldown < 2 or player.tier(20) >= 2)
       and castable(SB.Rend,target)
