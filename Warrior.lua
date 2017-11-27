@@ -76,7 +76,59 @@ local function combat()
       end -- End of FocusedRageArm
 
       -- Rend
+      if castable(SB.Rend,target) then
+        if target.debuff(AB.Rend).remains < 5 and
+        player.spell(SB.BattleCry).cooldown < 2 and
+        (player.spell(SB.BladestormArms).cooldown < 2 or
+        not player.tier(20) < 4) then
+          return cast(SB.Rend,target)
+        end
+      end
 
+      -- Ravager
+      if castable(SB.Ravager,target) then
+        if player.spell(SB.Ravager).cooldown <= player.gcd and
+        target.debuff(AB.ColossusSmash).remains > 6 then
+          return cast(SB.Ravager,target)
+        end
+      end
+
+      -- WhirlWind
+      if castable(SB.WhirlWind,target) then
+        if player.talent(5,1) and player.buff(253383).count == 3 and
+        target.debuff(AB.ColossusSmash).up and player.buff(AB.BattleCry).down
+        then
+          return cast(SB.WhirlWind,target)
+        end
+      end
+
+      -- MortalStrike
+      if castable(SB.MortalStrike,target) then
+        if player.buff(242188).count == 2 and
+        player.buff(AB.ShatteredDefenses).up then
+          return cast(SB.MortalStrike,target)
+        end
+      end
+
+      -- Overpower
+      if castable(SB.Overpower,target) then
+        if player.power.rage.actual < 40 then
+          return cast(SB.Overpower,target)
+        end
+      end
+
+      -- Execute
+      if castable(SB.Execute,target) then
+        if player.buff(AB.ShatteredDefenses).down or
+        player.power.rage.actual >= 40 or (player.talent(1,1) and
+        player.power.rage.actual >= 36) then
+          return cast(SB.Execute,target)
+        end
+      end
+
+      -- BladestormArms interrupt
+      --[[if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
+        return --]] 
     end -- End of Enrage
 
     -- If we have the head or the 4pc and we're bursting - cast BS
