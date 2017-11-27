@@ -1,7 +1,6 @@
 local function combat()
   if target.alive and target.enemy then
 
-
     -- racials checks
     if player.race == 'Orc' then
       if castable(SB.BloodFury,target) and (player.buff(AB.BattleCry).up or
@@ -33,6 +32,10 @@ local function combat()
       and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
         return cast(SB.BattleCry,target)
       end
+    end
+
+    if target.health.percent <= 20 then
+
     end
 
     -- If we have the head or the 4pc and we're bursting - cast BS
