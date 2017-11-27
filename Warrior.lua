@@ -21,12 +21,26 @@ local function combat()
       end
     end
 
+    -- Battlecry checks
+    if castable(SB.BattleCry,target) then
+      if (target.timetodie >= 70 or player.tier(20) >= 4) and
+      ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager) or
+      not player.talent(7,3) and player.spell(AB.GCD).cooldown == 0 and
+      target.debuff(AB.ColossusSmash).remains >= 5 and
+      (player.spell(SB.BladestormArms.cooldown == 0) or player.tier(20) >= 4)
+      and (not player.talent(3,2) or player.debuff(AB.rend).remains > 4))) or
+      player.buff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
+      and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
+        return cast(SB.BattleCry,target)
+      end
+    end
+
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
       if player.buff(AB.BattleCry).up and
       (player.tier(20) >= 4 or itemequipped(IB.TheGreatStormsEye))
-      and castable(SB.Bladestorm,target) then
-        return cast(SB.Bladestorm,target)
+      and castable(SB.BladestormArms,target) then
+        return cast(SB.BladestormArms,target)
       end
     end
 
@@ -60,13 +74,13 @@ local function combat()
 
     -- If rend remaining time is under 2.4 or we're about to burst - cast rend
     if player.talent(3,2) and target.debuff(AB.Rend).up then
-      if target.debuff(AB.Rend).cooldown <= player.spell(AB.GCD).cooldown
+      if target.debuff(AB.Rend).remains <= player.spell(AB.GCD).cooldown
       then
         return cast(SB.Rend,target)
       end
-      if target.debuff(AB.Rend).cooldown < 5 and
+      if target.debuff(AB.Rend).remains < 5 and
       player.spell(SB.BattleCry).cooldown < 2 and
-      (player.spell(SB.Bladestorm).cooldown < 2 or player.tier(20) >= 2)
+      (player.spell(SB.BladestormArms).cooldown < 2 or player.tier(20) >= 2)
       and castable(SB.Rend,target)
       then
         return cast(SB.Rend,target)
@@ -133,9 +147,9 @@ local function combat()
       return cast(SB.Overpower,target)
     end
 
-    -- Bladestorm if we don't have the 4pc
-    if player.tier(20) >= 4 and castable(SB.Bladestorm,target) then
-      return cast(SB.Bladestorm,target)
+    -- BladestormArms if we don't have the 4pc
+    if player.tier(20) >= 4 and castable(SB.BladestormArms,target) then
+      return cast(SB.BladestormArms,target)
     end
   end
 end
