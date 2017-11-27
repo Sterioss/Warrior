@@ -37,9 +37,47 @@ local function combat()
       end
     end
 
+    -- execute phase
     if target.health.percent <= 20 then
+      -- BladestormArms if we've the head or 4pc on burst
+      if castable(SB.BladestormArms,target) then
+        if player.buff(AB.BattleCry).up and (player.tier(20) >= 4 or
+        itemequipped(IB.TheGreatStormsEye)) then
+          return cast(SB.BladestormArms,target)
+      end
 
-    end
+      -- If we have ShatteredDefenses down
+      if player.buff(AB.ShatteredDefenses).down then
+        -- go for ColossusSmash
+        if castable(SB.ColossusSmash,target) then
+          if player.buff(AB.BattleCry).down then
+            return cast(SB.ColossusSmash,target)
+          end
+          if player.buff(242188).count == 2 and
+          (player.spell(AB.BattleCry).cooldown < 1
+          or player.buff(AB.BattleCry).up) then
+            return cast(SB.ColossusSmash,target)
+          end
+        end -- castable ColossusSmash
+        -- or go for warkreaker
+        if castable(SB.Warbreaker,target)
+          if player.spell(SB.MortalStrike).cooldown <=
+          player.spell(AB.GCD).cooldown and player.buff(242188).count == 2 then
+            return cast(SB.Warbreaker,target)
+          end
+        end -- castable warkreaker
+      end -- ShatteredDefenses down
+
+      -- focused rage if we're too high on rage
+      if player.talent(6,3) then
+        if player.power.rage.deficit < 35 then
+          return cast(SB.FocusedRageArm,target)
+        end
+      end -- End of FocusedRageArm
+
+      -- Rend
+
+    end -- End of Enrage
 
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
