@@ -1,5 +1,26 @@
 local function combat()
   if target.alive and target.enemy then
+
+
+    -- racials checks
+    if player.race == 'Orc' then
+      if castable(SB.BloodFury,target) and (player.buff(AB.BattleCry).up or
+      target.timetodie <= 16) then
+        return cast(SB.BloodFury,target)
+      end
+    elseif player.race == 'Troll' then
+      if castable(26297,target) and (player.buff(AB.BattleCry).up or
+      target.timetodie <= 11) then
+        return cast(26297,target)
+      end
+    elseif player.race == 'BloodElf' then
+      if castable(SB.ArcaneTorrent,target) and player.buff(227266).down and
+      player.power.rage.deficit > 40
+      and player.spell(SB.BattleCry).cooldown ~= 0 then
+        return cast(SB.ArcaneTorrent,target)
+      end
+    end
+    
     -- If we have the head or the 4pc and we're bursting - cast BS
     if not player.talent(7,3) then
       if player.buff(AB.BattleCry).up and
@@ -37,17 +58,13 @@ local function combat()
       end
     end
 
-    if target.debuff(AB.Rend).down and castable(SB.Rend,target) then
-      return cast(SB.Rend,target)
-    end
-
     -- If rend remaining time is under 2.4 or we're about to burst - cast rend
     if player.talent(3,2) and target.debuff(AB.Rend).up then
-      if target.debuff(AB.Rend).cooldown <= player.spell(61304).duration
+      if target.debuff(AB.Rend).cooldown <= player.spell(AB.GCD).cooldown
       then
         return cast(SB.Rend,target)
       end
-      if target.debuff(AB.Rend).cooldown < 5 and
+      if target.debuff(AB.Rend).duration < 5 and
       player.spell(SB.BattleCry).cooldown < 2 and
       (player.spell(SB.Bladestorm).cooldown < 2 or player.tier(20) >= 2)
       and castable(SB.Rend,target)
