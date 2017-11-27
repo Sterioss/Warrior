@@ -76,14 +76,14 @@ local function combat()
     end
 
     -- If rend remaining time is under 2.4 or we're about to burst - cast rend
-    if player.talent(3,2) and target.debuff(AB.Rend).up then
-      if target.debuff(AB.Rend).remains <= player.spell(AB.GCD).cooldown
+    if player.talent(3,2) then
+      if target.debuff(AB.Rend).remains <= player.gcd
       then
         return cast(SB.Rend,target)
       end
       if target.debuff(AB.Rend).remains < 5 and
       player.spell(SB.BattleCry).cooldown < 2 and
-      (player.spell(SB.BladestormArms).cooldown < 2 or player.tier(20) >= 2)
+      (player.spell(SB.BladestormArms).cooldown < 2 or player.tier(20) < 4)
       and castable(SB.Rend,target)
       then
         return cast(SB.Rend,target)
@@ -124,7 +124,7 @@ local function combat()
 
     -- refreshing Rend on next gcd if it's close to end
     if player.talent(3,2) then
-      if target.debuff(AB.Rend).duration <= 2.4 and castable(SB.Rend,target)
+      if target.debuff(AB.Rend).remains <= 2.4 and castable(SB.Rend,target)
       then
         return cast(SB.Rend,target)
       end
