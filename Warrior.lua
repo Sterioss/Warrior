@@ -22,7 +22,7 @@ local function combat()
 
     -- Battlecry checks
     if castable(SB.BattleCry,target) then
-      if player.buff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
+      if target.debuff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
       and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
         return cast(SB.BattleCry,target)
       end
@@ -40,10 +40,11 @@ local function combat()
     -- execute phase
     if target.health.percent <= 20 then
       -- BladestormArms if we've the head or 4pc on burst
-      if castable(SB.BladestormArms,target) then
+      if castable(SB.BladestormArms,target) and not player.talent(7,3) then
         if player.buff(AB.BattleCry).up and (player.tier(20) >= 4 or
         itemequipped(IB.TheGreatStormsEye)) then
           return cast(SB.BladestormArms,target)
+        end
       end
 
       -- If we have ShatteredDefenses down
@@ -53,16 +54,17 @@ local function combat()
           if player.buff(AB.BattleCry).down then
             return cast(SB.ColossusSmash,target)
           end
-          if player.buff(242188).count == 2 and
+          if target.debuff(242188).count == 2 and
           (player.spell(AB.BattleCry).cooldown < 1
           or player.buff(AB.BattleCry).up) then
             return cast(SB.ColossusSmash,target)
           end
         end -- castable ColossusSmash
         -- or go for warkreaker
-        if castable(SB.Warbreaker,target)
+        if castable(SB.Warbreaker,target) then
           if player.spell(SB.MortalStrike).cooldown <=
-          player.spell(AB.GCD).cooldown and player.buff(242188).count == 2 then
+          player.spell(AB.GCD).cooldown
+          and target.debuff(242188).count == 2 then
             return cast(SB.Warbreaker,target)
           end
         end -- castable warkreaker
@@ -104,7 +106,7 @@ local function combat()
 
       -- MortalStrike
       if castable(SB.MortalStrike,target) then
-        if player.buff(242188).count == 2 and
+        if target.debuff(242188).count == 2 and
         player.buff(AB.ShatteredDefenses).up then
           return cast(SB.MortalStrike,target)
         end
@@ -127,8 +129,9 @@ local function combat()
       end
 
       -- BladestormArms interrupt
-      --[[if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
-        return --]] 
+      if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
+        return CancelUnitBuff("player", AB.BladestormArms)
+      end
     end -- End of Enrage
 
     -- If we have the head or the 4pc and we're bursting - cast BS
@@ -150,9 +153,8 @@ local function combat()
         player.spell(61304).cooldown) and not player.talent(5,1) then
           return cast(SB.Warbreaker,target)
         end
-        if (player.talent(5,1)
-        and target.debuff(AB.ColossusSmash) < player.gcd))
-        then
+        if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
+        < player.gcd) then
           return cast(SB.Warbreaker,target)
         end
       end
@@ -214,9 +216,11 @@ local function combat()
     end
 
     -- casting MS if the buff's up
-    if player.buff(AB.ShatteredDefenses).up or player.buff(242188).down
-    and castable(12294,target) then
-      return cast(12294,target)
+    if castable(SB.MortalStrike,target) then
+      if player.buff(AB.ShatteredDefenses).up or target.debuff(242188).down
+      then
+        return cast(12294,target)
+      end
     end
 
     -- refreshing Rend on next gcd if it's close to end
@@ -250,8 +254,10 @@ local function combat()
     end
 
     -- BladestormArms if we don't have the 4pc
-    if player.tier(20) >= 4 and castable(SB.BladestormArms,target) then
-      return cast(SB.BladestormArms,target)
+    if not player.talent(7,3) then
+      if player.tier(20) >= 4 and castable(SB.BladestormArms,target) then
+        return cast(SB.BladestormArms,target)
+      end
     end
   end
 end
