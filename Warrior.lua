@@ -22,14 +22,17 @@ local function combat()
 
     -- Battlecry checks
     if castable(SB.BattleCry,target) then
+      if player.buff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
+      and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
+        return cast(SB.BattleCry,target)
+      end
       if ((target.timetodie >= 70 or player.tier(20) >= 4) and
       ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager)) or
       not player.talent(7,3) and player.spell(AB.GCD).cooldown == 0 and
       target.debuff(AB.ColossusSmash).remains >= 5 and
       (player.spell(SB.BladestormArms.cooldown == 0) or player.tier(20) >= 4)
-      and (not player.talent(3,2) or player.debuff(AB.rend).remains > 4))) or
-      player.buff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
-      and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
+      and (not player.talent(3,2) or player.debuff(AB.rend).remains > 4)))
+      then
         return cast(SB.BattleCry,target)
       end
     end
@@ -52,12 +55,16 @@ local function combat()
       if castable(SB.ColossusSmash,target) then
         return cast(SB.ColossusSmash,target)
       end
-      if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
-      player.spell(61304).cooldown) and (not player.talent(5,1) or
-      (player.talent(5,1) and target.debuff(AB.ColossusSmash) < player.gcd)) and
-      castable(SB.Warbreaker,target)
-      then
-        return cast(SB.Warbreaker,target)
+      if castable(SB.Warbreaker,target) then
+        if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
+        player.spell(61304).cooldown) and not player.talent(5,1) then
+          return cast(SB.Warbreaker,target)
+        end
+        if (player.talent(5,1)
+        and target.debuff(AB.ColossusSmash) < player.gcd))
+        then
+          return cast(SB.Warbreaker,target)
+        end
       end
     end
 
@@ -146,8 +153,10 @@ local function combat()
     end
 
     -- Overpower if nothing else is a priority
-    if castable(SB.Overpower,target) then
-      return cast(SB.Overpower,target)
+    if player.talent(1,2) then
+      if castable(SB.Overpower,target) then
+        return cast(SB.Overpower,target)
+      end
     end
 
     -- BladestormArms if we don't have the 4pc
