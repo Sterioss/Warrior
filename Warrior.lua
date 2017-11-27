@@ -22,7 +22,7 @@ local function combat()
 
     -- Battlecry checks
     if castable(SB.BattleCry,target) then
-      if (target.timetodie >= 70 or player.tier(20) >= 4) and
+      if ((target.timetodie >= 70 or player.tier(20) >= 4) and
       ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager) or
       not player.talent(7,3) and player.spell(AB.GCD).cooldown == 0 and
       target.debuff(AB.ColossusSmash).remains >= 5 and
