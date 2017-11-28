@@ -31,10 +31,10 @@ local function combat()
         end
         if ((target.timetodie >= 70 or player.tier(20) >= 4) and
         ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager)) or
-        not player.talent(7,3) and player.spell(AB.GCD).cooldown == 0 and
+        player.talent(7,3) == false and player.spell(AB.GCD).cooldown == 0 and
         target.debuff(AB.ColossusSmash).remains >= 5 and
         (player.spell(SB.BladestormArms).cooldown == 0) or player.tier(20) >= 4)
-        and (not player.talent(3,2) or player.debuff(AB.Rend).remains > 4)))
+        and (player.talent(3,2) == false or player.debuff(AB.Rend).remains > 4))
         then
           return cast(SB.BattleCry,target)
         end
@@ -43,7 +43,8 @@ local function combat()
       -- execute phase
       if target.health.percent <= 20 and player.enemies(8,true) < 5 then
         -- BladestormArms if we've the head or 4pc on burst
-        if castable(SB.BladestormArms,target) and not player.talent(7,3) then
+        if castable(SB.BladestormArms,target) and player.talent(7,3) == false
+        then
           if player.buff(AB.BattleCry).up and (player.tier(20) >= 4 or
           itemequipped(IB.TheGreatStormsEye)) then
             return cast(SB.BladestormArms,target)
@@ -85,7 +86,7 @@ local function combat()
         if target.debuff(AB.Rend).remains < 5 and
         player.spell(SB.BattleCry).cooldown < 2 and
         (player.spell(SB.BladestormArms).cooldown < 2 or
-        not player.tier(20) < 4) and
+        player.tier(20) < 4) and
         (player.power.rage.actual >= 30 or (player.talent(1,1) and
         player.power.rage.actual >= 27))
         then
@@ -148,7 +149,7 @@ local function combat()
       if target.health.percent > 20 then -- Rest of the time
 
       -- If we have the head or the 4pc and we're bursting - cast BS
-      if not player.talent(7,3) then
+      if player.talent(7,3) == false then
         if player.buff(AB.BattleCry).up and
         (player.tier(20) >= 4 or itemequipped(IB.TheGreatStormsEye))
         and castable(SB.BladestormArms,target) then
@@ -163,7 +164,7 @@ local function combat()
         end
         if castable(SB.Warbreaker,target) and target.inmelee then
           if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
-          player.spell(61304).cooldown) and not player.talent(5,1) then
+          player.spell(61304).cooldown) and player.talent(5,1) == false then
             return cast(SB.Warbreaker,target)
           end
           if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
@@ -176,7 +177,7 @@ local function combat()
       -- Checks for FocusedRage
       if player.talent(6,3) then
         if player.buff(AB.FocusedRageArm).count < 3 then
-          if not player.spell(SB.ColossusSmash).cooldown == 0 and
+          if player.spell(SB.ColossusSmash).cooldown > 0 and
           player.buff(227266).up and (player.power.rage.actual >= 130 or
           target.debuff(AB.ColossusSmash).down or player.talent(7,1) and
           player.spell(SB.BattleCry).cooldown <= 8) and
@@ -261,9 +262,9 @@ local function combat()
       end
 
       -- cast slam when we don't have FoB have 52rage, not rend or not ravager
-      if not player.talent(5,1) and player.enemies(8,true) == 1 then
-        if (player.power.rage.actual >= 52 or not player.talent(3,2)
-        or not player.talent(7,3)) and castable(SB.Slam,target) and
+      if player.talent(5,1) == false and player.enemies(8,true) == 1 then
+        if (player.power.rage.actual >= 52 or player.talent(3,2) == false
+        or player.talent(7,3) == false) and castable(SB.Slam,target) and
         (player.power.rage.actual >= 20 or (player.talent(1,1) and
         player.power.rage.actual >= 18))
         then
@@ -279,7 +280,7 @@ local function combat()
       end
 
       -- BladestormArms if we don't have the 4pc
-      if not player.talent(7,3) then
+      if player.talent(7,3) == false then
         if player.tier(20) >= 4 and castable(SB.BladestormArms,target) then
           return cast(SB.BladestormArms,target)
         end
