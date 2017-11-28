@@ -33,7 +33,7 @@ local function combat()
         ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager)) or
         not player.talent(7,3) and player.spell(AB.GCD).cooldown == 0 and
         target.debuff(AB.ColossusSmash).remains >= 5 and
-        (player.spell(SB.BladestormArms.cooldown == 0) or player.tier(20) >= 4)
+        (player.spell(SB.BladestormArms).cooldown == 0) or player.tier(20) >= 4)
         and (not player.talent(3,2) or player.debuff(AB.Rend).remains > 4)))
         then
           return cast(SB.BattleCry,target)
