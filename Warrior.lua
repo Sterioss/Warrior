@@ -132,131 +132,132 @@ local function combat()
       if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
         return CancelUnitBuff("player", AB.BladestormArms)
       end
-    end -- End of Enrage
+    else then -- Rest of the time
 
-    -- If we have the head or the 4pc and we're bursting - cast BS
-    if not player.talent(7,3) then
-      if player.buff(AB.BattleCry).up and
-      (player.tier(20) >= 4 or itemequipped(IB.TheGreatStormsEye))
-      and castable(SB.BladestormArms,target) then
-        return cast(SB.BladestormArms,target)
-      end
-    end
-
-    -- If we don't have the Shattered buff - cast CS or Warbreaker
-    if player.buff(AB.ShatteredDefenses).down then
-      if castable(SB.ColossusSmash,target) then
-        return cast(SB.ColossusSmash,target)
-      end
-      if castable(SB.Warbreaker,target) then
-        if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
-        player.spell(61304).cooldown) and not player.talent(5,1) then
-          return cast(SB.Warbreaker,target)
-        end
-        if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
-        < player.gcd) then
-          return cast(SB.Warbreaker,target)
+      -- If we have the head or the 4pc and we're bursting - cast BS
+      if not player.talent(7,3) then
+        if player.buff(AB.BattleCry).up and
+        (player.tier(20) >= 4 or itemequipped(IB.TheGreatStormsEye))
+        and castable(SB.BladestormArms,target) then
+          return cast(SB.BladestormArms,target)
         end
       end
-    end
 
-    -- Checks for FocusedRage
-    if player.talent(6,3) then
-      if player.buff(AB.FocusedRageArm).count < 3 then
-        if not player.spell(SB.ColossusSmash).cooldown == 0 and
-        player.buff(227266).up and (player.power.rage.actual >= 130 or
-        target.debuff(AB.ColossusSmash).down or player.talent(7,1) and
-        player.spell(SB.BattleCry).cooldown <= 8) and
-        castable(SB.FocusedRageArm,target)
+      -- If we don't have the Shattered buff - cast CS or Warbreaker
+      if player.buff(AB.ShatteredDefenses).down then
+        if castable(SB.ColossusSmash,target) then
+          return cast(SB.ColossusSmash,target)
+        end
+        if castable(SB.Warbreaker,target) then
+          if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
+          player.spell(61304).cooldown) and not player.talent(5,1) then
+            return cast(SB.Warbreaker,target)
+          end
+          if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
+          < player.gcd) then
+            return cast(SB.Warbreaker,target)
+          end
+        end
+      end
+
+      -- Checks for FocusedRage
+      if player.talent(6,3) then
+        if player.buff(AB.FocusedRageArm).count < 3 then
+          if not player.spell(SB.ColossusSmash).cooldown == 0 and
+          player.buff(227266).up and (player.power.rage.actual >= 130 or
+          target.debuff(AB.ColossusSmash).down or player.talent(7,1) and
+          player.spell(SB.BattleCry).cooldown <= 8) and
+          castable(SB.FocusedRageArm,target)
+          then
+            return cast(SB.FocusedRageArm,target)
+          end
+        end
+      end
+
+      -- If rend remaining time is under 2.4 or we're about to burst - cast rend
+      if player.talent(3,2) then
+        if target.debuff(AB.Rend).remains <= player.gcd
         then
-          return cast(SB.FocusedRageArm,target)
+          return cast(SB.Rend,target)
+        end
+        if target.debuff(AB.Rend).remains < 5 and
+        player.spell(SB.BattleCry).cooldown < 2 and
+        (player.spell(SB.BladestormArms).cooldown < 2 or player.tier(20) < 4)
+        and castable(SB.Rend,target)
+        then
+          return cast(SB.Rend,target)
         end
       end
-    end
 
-    -- If rend remaining time is under 2.4 or we're about to burst - cast rend
-    if player.talent(3,2) then
-      if target.debuff(AB.Rend).remains <= player.gcd
-      then
-        return cast(SB.Rend,target)
+      -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
+      if player.talent(7,3) then
+        if player.spell(SB.BattleCry).cooldown <= player.spell(AB.GCD).cooldown
+        and target.debuff(AB.ColossusSmash).duration > 6
+        and castable(SB.Ravager,target)
+        then
+          return cast(SB.Ravager,target)
+        end
       end
-      if target.debuff(AB.Rend).remains < 5 and
-      player.spell(SB.BattleCry).cooldown < 2 and
-      (player.spell(SB.BladestormArms).cooldown < 2 or player.tier(20) < 4)
-      and castable(SB.Rend,target)
-      then
-        return cast(SB.Rend,target)
+
+      -- legendary ring buff up -> cast execute
+      if itemequipped(137052) then
+        if player.buff(225947).up and castable(SB.Execute,target) then
+          return cast(SB.Execute,target)
+        end
       end
-    end
 
-    -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
-    if player.talent(7,3) then
-      if player.spell(SB.BattleCry).cooldown <= player.spell(AB.GCD).cooldown
-      and target.debuff(AB.ColossusSmash).duration > 6
-      and castable(SB.Ravager,target)
-      then
-        return cast(SB.Ravager,target)
+      -- If overpower is up and we're not bursting - cast overpower
+      if player.talent(1,2) then
+        if player.buff(AB.Overpower).up and player.buff(AB.BattleCry).down
+        and castable(SB.Overpower,target)
+        then
+          return cast(SB.Overpower,target)
+        end
       end
-    end
 
-    -- legendary ring buff up -> cast execute
-    if itemequipped(137052) then
-      if player.buff(225947).up and castable(SB.Execute,target) then
-        return cast(SB.Execute,target)
+      -- casting MS if the buff's up
+      if castable(SB.MortalStrike,target) then
+        if player.buff(AB.ShatteredDefenses).up or target.debuff(242188).down
+        then
+          return cast(12294,target)
+        end
       end
-    end
 
-    -- If overpower is up and we're not bursting - cast overpower
-    if player.talent(1,2) then
-      if player.buff(AB.Overpower).up and player.buff(AB.BattleCry).down
-      and castable(SB.Overpower,target)
-      then
-        return cast(SB.Overpower,target)
+      -- refreshing Rend on next gcd if it's close to end
+      if player.talent(3,2) then
+        if target.debuff(AB.Rend).remains <= 2.4 and castable(SB.Rend,target)
+        then
+          return cast(SB.Rend,target)
+        end
       end
-    end
 
-    -- casting MS if the buff's up
-    if castable(SB.MortalStrike,target) then
-      if player.buff(AB.ShatteredDefenses).up or target.debuff(242188).down
-      then
-        return cast(12294,target)
+      -- WhirlWind if we don't have the FoB talent
+      if player.talent(5,1) and --[[ check for WW targent > 1 ]]
+      castable(SB.WhirlWind,target) then
+        return cast(SB.WhirlWind,target)
       end
-    end
 
-    -- refreshing Rend on next gcd if it's close to end
-    if player.talent(3,2) then
-      if target.debuff(AB.Rend).remains <= 2.4 and castable(SB.Rend,target)
-      then
-        return cast(SB.Rend,target)
+      -- cast slam when we don't have FoB have 52rage, not rend or not ravager
+      if not player.talent(5,1) --[[ check for WW targets = 1 ]] then
+        if (player.power.rage.actual >= 52 or not player.talent(3,2)
+        or not player.talent(7,3)) and castable(SB.Slam,target)
+        then
+          return cast(SB.Slam,target)
+        end
       end
-    end
 
-    -- WhirlWind if we don't have the FoB talent
-    if player.talent(5,1) and --[[ check for WW targent > 1 ]]
-    castable(SB.WhirlWind,target) then
-      return cast(SB.WhirlWind,target)
-    end
-
-    -- cast slam when we don't have FoB have 52rage, not rend or not ravager
-    if not player.talent(5,1) --[[ check for WW targets = 1 ]] then
-      if (player.power.rage.actual >= 52 or not player.talent(3,2)
-      or not player.talent(7,3)) and castable(SB.Slam,target)
-      then
-        return cast(SB.Slam,target)
+      -- Overpower if nothing else is a priority
+      if player.talent(1,2) then
+        if castable(SB.Overpower,target) then
+          return cast(SB.Overpower,target)
+        end
       end
-    end
 
-    -- Overpower if nothing else is a priority
-    if player.talent(1,2) then
-      if castable(SB.Overpower,target) then
-        return cast(SB.Overpower,target)
-      end
-    end
-
-    -- BladestormArms if we don't have the 4pc
-    if not player.talent(7,3) then
-      if player.tier(20) >= 4 and castable(SB.BladestormArms,target) then
-        return cast(SB.BladestormArms,target)
+      -- BladestormArms if we don't have the 4pc
+      if not player.talent(7,3) then
+        if player.tier(20) >= 4 and castable(SB.BladestormArms,target) then
+          return cast(SB.BladestormArms,target)
+        end
       end
     end
   end
