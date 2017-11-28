@@ -31,9 +31,9 @@ local function combat()
         end
         if ((target.timetodie >= 70 or player.tier(20) >= 4) and
         ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager)) or
-        player.talent(7,3) == false and player.spell(AB.GCD).cooldown == 0 and
+        player.talent(7,3) == false and player.spell(AB.GCD).cooldown < 0.01 and
         target.debuff(AB.ColossusSmash).remains >= 5 and
-        (player.spell(SB.BladestormArms).cooldown == 0) or player.tier(20) >= 4)
+        (player.spell(SB.BladestormArms).cooldown < 0.01 or player.tier(20) >= 4)
         and (player.talent(3,2) == false or player.debuff(AB.Rend).remains > 4))
         then
           return cast(SB.BattleCry,target)
@@ -74,15 +74,15 @@ local function combat()
           end -- castable warkreaker
         end -- ShatteredDefenses down
 
-      -- focused rage if we're too high on rage
-      if player.talent(6,3) then
-        if player.power.rage.deficit < 35 then
-          return cast(SB.FocusedRageArm,target)
-        end
-      end -- End of FocusedRageArm
+        -- focused rage if we're too high on rage
+        if player.talent(6,3) then
+          if player.power.rage.deficit < 35 then
+            return cast(SB.FocusedRageArm,target)
+          end
+        end -- End of FocusedRageArm
 
-      -- Rend
-      if castable(SB.Rend,target) then
+        -- Rend
+        if castable(SB.Rend,target) then
         if target.debuff(AB.Rend).remains < 5 and
         player.spell(SB.BattleCry).cooldown < 2 and
         (player.spell(SB.BladestormArms).cooldown < 2 or
@@ -92,18 +92,18 @@ local function combat()
         then
           return cast(SB.Rend,target)
         end
-      end
+        end
 
-      -- Ravager
-      if castable(SB.Ravager,target) then
+        -- Ravager
+        if castable(SB.Ravager,target) then
         if player.spell(SB.Ravager).cooldown <= player.gcd and
         target.debuff(AB.ColossusSmash).remains > 6 then
           return cast(SB.Ravager,target)
         end
-      end
+        end
 
-      -- WhirlWind
-      if castable(SB.WhirlWind,target) then
+        -- WhirlWind
+        if castable(SB.WhirlWind,target) then
         if player.talent(5,1) and player.buff(253383).count == 3 and
         target.debuff(AB.ColossusSmash).up and player.buff(AB.BattleCry).down
         and (player.power.rage.actual >= 30 or (player.talent(1,1) and
@@ -111,10 +111,10 @@ local function combat()
         then
           return cast(SB.WhirlWind,target)
         end
-      end
+        end
 
-      -- MortalStrike
-      if castable(SB.MortalStrike,target) then
+        -- MortalStrike
+        if castable(SB.MortalStrike,target) then
         if target.debuff(242188).count == 2 and
         player.buff(AB.ShatteredDefenses).up and
         (player.power.rage.actual >= 20 or (player.talent(1,1) and
@@ -122,28 +122,28 @@ local function combat()
         then
           return cast(SB.MortalStrike,target)
         end
-      end
+        end
 
-      -- Overpower
-      if castable(SB.Overpower,target) then
+        -- Overpower
+        if castable(SB.Overpower,target) then
         if player.power.rage.actual < 40 then
           return cast(SB.Overpower,target)
         end
-      end
+        end
 
-      -- Execute
-      if castable(SB.Execute,target) then
+        -- Execute
+        if castable(SB.Execute,target) then
         if player.buff(AB.ShatteredDefenses).down or
         player.power.rage.actual >= 40 or (player.talent(1,1) and
         player.power.rage.actual >= 36) then
           return cast(SB.Execute,target)
         end
-      end
+        end
 
-      -- BladestormArms interrupt
-      if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
+        -- BladestormArms interrupt
+        if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
         return CancelUnitBuff("player", AB.BladestormArms)
-      end
+        end
       end
 
       if target.health.percent > 20 then -- Rest of the time
@@ -176,7 +176,7 @@ local function combat()
 
       -- Checks for FocusedRage
       if player.talent(6,3) then
-        if player.buff(AB.FocusedRageArm).count < 3 then
+        if player.buff(207982).count < 3 then
           if player.spell(SB.ColossusSmash).cooldown > 0 and
           player.buff(227266).up and (player.power.rage.actual >= 130 or
           target.debuff(AB.ColossusSmash).down or player.talent(7,1) and
