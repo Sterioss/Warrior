@@ -29,14 +29,19 @@ local function combat()
         and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
           return cast(SB.BattleCry,target)
         end
-        if ((target.timetodie >= 70 or player.tier(20) >= 4) and
-        ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager)) or
-        player.talent(7,3) == false and player.spell(AB.GCD).cooldown < 0.01 and
-        target.debuff(AB.ColossusSmash).remains >= 5 and
-        (player.spell(SB.BladestormArms).cooldown < 0.01 or player.tier(20) >= 4)
-        and (player.talent(3,2) == false or player.debuff(AB.Rend).remains > 4))
-        then
-          return cast(SB.BattleCry,target)
+        if target.timetodie >= 70 or player.tier(20) >= 4 then
+          if player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager) then
+            return cast(SB.BattleCry,target)
+          end
+          if player.talent(7,3) == false
+          and player.spell(AB.GCD).cooldown == 0 and
+          target.debuff(AB.ColossusSmash).remains >= 5 and
+          (player.spell(SB.BladestormArms).cooldown == 0
+          or player.tier(20) < 4) and (player.talent(3,2) == false
+          or target.debuff(AB.Rend).remains > 4)
+          then
+            return cast(SB.BattleCry,target)
+          end
         end
       end
 
@@ -177,8 +182,8 @@ local function combat()
       -- Checks for FocusedRage
       if player.talent(6,3) then
         if player.buff(207982).count < 3 then
-          if player.spell(SB.ColossusSmash).cooldown > 0 and
-          player.buff(227266).up and (player.power.rage.actual >= 130 or
+          if player.spell(SB.ColossusSmash).cooldown > player.gcd and
+          player.buff(227266).down and (player.power.rage.actual >= 130 or
           target.debuff(AB.ColossusSmash).down or player.talent(7,1) and
           player.spell(SB.BattleCry).cooldown <= 8) and
           castable(SB.FocusedRageArm,target)
@@ -208,10 +213,9 @@ local function combat()
       end
 
       -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
-      if player.talent(7,3) then
-        if player.spell(SB.BattleCry).cooldown <= player.spell(AB.GCD).cooldown
+      if player.talent(7,3) and castable(SB.Ravager,target) then
+        if player.spell(SB.BattleCry).cooldown <= player.gcd
         and target.debuff(AB.ColossusSmash).duration > 6
-        and castable(SB.Ravager,target)
         then
           return cast(SB.Ravager,target)
         end
