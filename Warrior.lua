@@ -5,28 +5,31 @@ local function spell_targets(spell)
 end
 
 local function combat()
-  if target.alive and target.enemy then
-    -- racials checks
-    if player.race == 'Orc' then
+  local inInstance, instanceType = IsInInstance()
+
+  if instanceType ~= "pvp" and instanceType ~= "arena" then
+    if target.alive and target.enemy then
+      -- racials checks
+      if player.race == 'Orc' then
       if castable(SB.BloodFury,target) and (player.buff(AB.BattleCry).up or
       target.timetodie <= 16) then
         return cast(SB.BloodFury,target)
       end
-    elseif player.race == 'Troll' then
+      elseif player.race == 'Troll' then
       if castable(26297,target) and (player.buff(AB.BattleCry).up or
       target.timetodie <= 11) then
         return cast(26297,target)
       end
-    elseif player.race == 'BloodElf' then
+      elseif player.race == 'BloodElf' then
       if castable(SB.ArcaneTorrent,target) and player.buff(227266).down and
       player.power.rage.deficit > 40
       and player.spell(SB.BattleCry).cooldown ~= 0 then
         return cast(SB.ArcaneTorrent,target)
       end
-    end
+      end
 
-    -- Battlecry checks
-    if castable(SB.BattleCry,target) then
+      -- Battlecry checks
+      if castable(SB.BattleCry,target) then
       if target.debuff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
       and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
         return cast(SB.BattleCry,target)
@@ -40,10 +43,10 @@ local function combat()
       then
         return cast(SB.BattleCry,target)
       end
-    end
+      end
 
-    -- execute phase
-    if target.health.percent <= 20 and spell_targets(SB.WhirlWind) < 5 then
+      -- execute phase
+      if target.health.percent <= 20 and spell_targets(SB.WhirlWind) < 5 then
       -- BladestormArms if we've the head or 4pc on burst
       if castable(SB.BladestormArms,target) and not player.talent(7,3) then
         if player.buff(AB.BattleCry).up and (player.tier(20) >= 4 or
@@ -137,9 +140,9 @@ local function combat()
       if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
         return CancelUnitBuff("player", AB.BladestormArms)
       end
-    end
+      end
 
-    if target.health.percent > 20 then -- Rest of the time
+      if target.health.percent > 20 then -- Rest of the time
 
       -- If we have the head or the 4pc and we're bursting - cast BS
       if not player.talent(7,3) then
@@ -266,9 +269,9 @@ local function combat()
           return cast(SB.BladestormArms,target)
         end
       end
-
-    end -- End of >20%
-  end -- End of target alive
+      end -- End of >20%
+    end -- End of target alive
+  end
 end
 
 local function resting()
