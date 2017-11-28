@@ -64,7 +64,7 @@ local function combat()
             end
           end -- castable ColossusSmash
           -- or go for warkreaker
-          if castable(SB.Warbreaker,target) and player.enemies(8,true) then
+          if castable(SB.Warbreaker,target) and target.inmelee then
             if player.spell(SB.MortalStrike).cooldown <=
             player.spell(AB.GCD).cooldown
             and target.debuff(242188).count == 2 then
@@ -85,7 +85,10 @@ local function combat()
         if target.debuff(AB.Rend).remains < 5 and
         player.spell(SB.BattleCry).cooldown < 2 and
         (player.spell(SB.BladestormArms).cooldown < 2 or
-        not player.tier(20) < 4) then
+        not player.tier(20) < 4) and
+        (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27))
+        then
           return cast(SB.Rend,target)
         end
       end
@@ -102,6 +105,8 @@ local function combat()
       if castable(SB.WhirlWind,target) then
         if player.talent(5,1) and player.buff(253383).count == 3 and
         target.debuff(AB.ColossusSmash).up and player.buff(AB.BattleCry).down
+        and (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27))
         then
           return cast(SB.WhirlWind,target)
         end
@@ -110,7 +115,10 @@ local function combat()
       -- MortalStrike
       if castable(SB.MortalStrike,target) then
         if target.debuff(242188).count == 2 and
-        player.buff(AB.ShatteredDefenses).up then
+        player.buff(AB.ShatteredDefenses).up and
+        (player.power.rage.actual >= 20 or (player.talent(1,1) and
+        player.power.rage.actual >= 18))
+        then
           return cast(SB.MortalStrike,target)
         end
       end
@@ -153,7 +161,7 @@ local function combat()
         if castable(SB.ColossusSmash,target) then
           return cast(SB.ColossusSmash,target)
         end
-        if castable(SB.Warbreaker,target) and player.enemies(8,true) then
+        if castable(SB.Warbreaker,target) and target.inmelee then
           if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
           player.spell(61304).cooldown) and not player.talent(5,1) then
             return cast(SB.Warbreaker,target)
@@ -181,14 +189,18 @@ local function combat()
 
       -- If rend remaining time is under 2.4 or we're about to burst - cast rend
       if player.talent(3,2) then
-        if target.debuff(AB.Rend).remains <= player.gcd
+        if target.debuff(AB.Rend).remains <= player.gcd and
+        (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27))
         then
           return cast(SB.Rend,target)
         end
         if target.debuff(AB.Rend).remains < 5 and
         player.spell(SB.BattleCry).cooldown < 2 and
         (player.spell(SB.BladestormArms).cooldown < 2 or player.tier(20) < 4)
-        and castable(SB.Rend,target)
+        and castable(SB.Rend,target) and
+        (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27))
         then
           return cast(SB.Rend,target)
         end
@@ -222,7 +234,9 @@ local function combat()
 
       -- casting MS if the buff's up
       if castable(SB.MortalStrike,target) then
-        if player.buff(AB.ShatteredDefenses).up or target.debuff(242188).down
+        if (player.buff(AB.ShatteredDefenses).up or target.debuff(242188).down)
+        and (player.power.rage.actual >= 20 or (player.talent(1,1) and
+        player.power.rage.actual >= 18))
         then
           return cast(12294,target)
         end
@@ -231,6 +245,8 @@ local function combat()
       -- refreshing Rend on next gcd if it's close to end
       if player.talent(3,2) then
         if target.debuff(AB.Rend).remains <= 2.4 and castable(SB.Rend,target)
+        and (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27))
         then
           return cast(SB.Rend,target)
         end
@@ -238,14 +254,18 @@ local function combat()
 
       -- WhirlWind if we don't have the FoB talent
       if (player.talent(5,1) or player.enemies(8,true) > 1) and
-      castable(SB.WhirlWind,target) then
+      castable(SB.WhirlWind,target) and (player.power.rage.actual >= 30 or
+      (player.talent(1,1) and player.power.rage.actual >= 27))
+      then
         return cast(SB.WhirlWind,target)
       end
 
       -- cast slam when we don't have FoB have 52rage, not rend or not ravager
       if not player.talent(5,1) and player.enemies(8,true) == 1 then
         if (player.power.rage.actual >= 52 or not player.talent(3,2)
-        or not player.talent(7,3)) and castable(SB.Slam,target)
+        or not player.talent(7,3)) and castable(SB.Slam,target) and
+        (player.power.rage.actual >= 20 or (player.talent(1,1) and
+        player.power.rage.actual >= 18))
         then
           return cast(SB.Slam,target)
         end
