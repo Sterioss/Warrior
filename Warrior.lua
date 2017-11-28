@@ -1,8 +1,3 @@
-local function spell_targets(spell)
-  if spell == SB.WhirlWind or spell == SB.BladestormArms then
-    return player.enemies(8)
-  end
-end
 
 local function combat()
   local inInstance, instanceType = IsInInstance()
@@ -11,72 +6,72 @@ local function combat()
     if target.alive and target.enemy then
       -- racials checks
       if player.race == 'Orc' then
-      if castable(SB.BloodFury,target) and (player.buff(AB.BattleCry).up or
-      target.timetodie <= 16) then
-        return cast(SB.BloodFury,target)
-      end
-      elseif player.race == 'Troll' then
-      if castable(26297,target) and (player.buff(AB.BattleCry).up or
-      target.timetodie <= 11) then
-        return cast(26297,target)
-      end
-      elseif player.race == 'BloodElf' then
-      if castable(SB.ArcaneTorrent,target) and player.buff(227266).down and
-      player.power.rage.deficit > 40
-      and player.spell(SB.BattleCry).cooldown ~= 0 then
-        return cast(SB.ArcaneTorrent,target)
-      end
+        if castable(SB.BloodFury,target) and (player.buff(AB.BattleCry).up or
+        target.timetodie <= 16) then
+          return cast(SB.BloodFury,target)
+        end
+        elseif player.race == 'Troll' then
+          if castable(26297,target) and (player.buff(AB.BattleCry).up or
+          target.timetodie <= 11) then
+            return cast(26297,target)
+          end
+        elseif player.race == 'BloodElf' then
+          if castable(SB.ArcaneTorrent,target) and player.buff(227266).down and
+          player.power.rage.deficit > 40
+          and player.spell(SB.BattleCry).cooldown ~= 0 then
+            return cast(SB.ArcaneTorrent,target)
+          end
       end
 
       -- Battlecry checks
       if castable(SB.BattleCry,target) then
-      if target.debuff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
-      and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
-        return cast(SB.BattleCry,target)
-      end
-      if ((target.timetodie >= 70 or player.tier(20) >= 4) and
-      ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager)) or
-      not player.talent(7,3) and player.spell(AB.GCD).cooldown == 0 and
-      target.debuff(AB.ColossusSmash).remains >= 5 and
-      (player.spell(SB.BladestormArms.cooldown == 0) or player.tier(20) >= 4)
-      and (not player.talent(3,2) or player.debuff(AB.rend).remains > 4)))
-      then
-        return cast(SB.BattleCry,target)
-      end
-      end
-
-      -- execute phase
-      if target.health.percent <= 20 and spell_targets(SB.WhirlWind) < 5 then
-      -- BladestormArms if we've the head or 4pc on burst
-      if castable(SB.BladestormArms,target) and not player.talent(7,3) then
-        if player.buff(AB.BattleCry).up and (player.tier(20) >= 4 or
-        itemequipped(IB.TheGreatStormsEye)) then
-          return cast(SB.BladestormArms,target)
+        if target.debuff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
+        and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
+          return cast(SB.BattleCry,target)
+        end
+        if ((target.timetodie >= 70 or player.tier(20) >= 4) and
+        ((player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager)) or
+        not player.talent(7,3) and player.spell(AB.GCD).cooldown == 0 and
+        target.debuff(AB.ColossusSmash).remains >= 5 and
+        (player.spell(SB.BladestormArms.cooldown == 0) or player.tier(20) >= 4)
+        and (not player.talent(3,2) or player.debuff(AB.Rend).remains > 4)))
+        then
+          return cast(SB.BattleCry,target)
         end
       end
 
-      -- If we have ShatteredDefenses down
-      if player.buff(AB.ShatteredDefenses).down then
-        -- go for ColossusSmash
-        if castable(SB.ColossusSmash,target) then
-          if player.buff(AB.BattleCry).down then
-            return cast(SB.ColossusSmash,target)
+      -- execute phase
+      if target.health.percent <= 20 and player.enemies(8,true) < 5 then
+        -- BladestormArms if we've the head or 4pc on burst
+        if castable(SB.BladestormArms,target) and not player.talent(7,3) then
+          if player.buff(AB.BattleCry).up and (player.tier(20) >= 4 or
+          itemequipped(IB.TheGreatStormsEye)) then
+            return cast(SB.BladestormArms,target)
           end
-          if target.debuff(242188).count == 2 and
-          (player.spell(AB.BattleCry).cooldown < 1
-          or player.buff(AB.BattleCry).up) then
-            return cast(SB.ColossusSmash,target)
-          end
-        end -- castable ColossusSmash
-        -- or go for warkreaker
-        if castable(SB.Warbreaker,target) then
-          if player.spell(SB.MortalStrike).cooldown <=
-          player.spell(AB.GCD).cooldown
-          and target.debuff(242188).count == 2 then
-            return cast(SB.Warbreaker,target)
-          end
-        end -- castable warkreaker
-      end -- ShatteredDefenses down
+        end
+
+        -- If we have ShatteredDefenses down
+        if player.buff(AB.ShatteredDefenses).down then
+          -- go for ColossusSmash
+          if castable(SB.ColossusSmash,target) then
+            if player.buff(AB.BattleCry).down then
+              return cast(SB.ColossusSmash,target)
+            end
+            if target.debuff(242188).count == 2 and
+            (player.spell(AB.BattleCry).cooldown < 1
+            or player.buff(AB.BattleCry).up) then
+              return cast(SB.ColossusSmash,target)
+            end
+          end -- castable ColossusSmash
+          -- or go for warkreaker
+          if castable(SB.Warbreaker,target) and player.enemies(8,true) then
+            if player.spell(SB.MortalStrike).cooldown <=
+            player.spell(AB.GCD).cooldown
+            and target.debuff(242188).count == 2 then
+              return cast(SB.Warbreaker,target)
+            end
+          end -- castable warkreaker
+        end -- ShatteredDefenses down
 
       -- focused rage if we're too high on rage
       if player.talent(6,3) then
@@ -158,7 +153,7 @@ local function combat()
         if castable(SB.ColossusSmash,target) then
           return cast(SB.ColossusSmash,target)
         end
-        if castable(SB.Warbreaker,target) then
+        if castable(SB.Warbreaker,target) and player.enemies(8,true) then
           if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
           player.spell(61304).cooldown) and not player.talent(5,1) then
             return cast(SB.Warbreaker,target)
@@ -242,13 +237,13 @@ local function combat()
       end
 
       -- WhirlWind if we don't have the FoB talent
-      if (player.talent(5,1) or spell_targets(SB.WhirlWind) > 1) and
+      if (player.talent(5,1) or player.enemies(8,true) > 1) and
       castable(SB.WhirlWind,target) then
         return cast(SB.WhirlWind,target)
       end
 
       -- cast slam when we don't have FoB have 52rage, not rend or not ravager
-      if not player.talent(5,1) and spell_targets(SB.WhirlWind) == 1 then
+      if not player.talent(5,1) and player.enemies(8,true) == 1 then
         if (player.power.rage.actual >= 52 or not player.talent(3,2)
         or not player.talent(7,3)) and castable(SB.Slam,target)
         then
@@ -280,7 +275,6 @@ end
 return {
     combat = combat,
     resting = resting,
-    spell_targets = spell_targets,
     -- Version (major.minor.sub)
     version = '1.0.0'
   }
