@@ -1,4 +1,10 @@
 local function combat()
+  local function spell_targets(spell)
+    if spell == 'SB.WhirlWind' or spell == 'SB.BladestormArms' then
+      return player.enemies(8)
+    end
+  end
+
   if target.alive and target.enemy then
 
     -- racials checks
@@ -38,7 +44,7 @@ local function combat()
     end
 
     -- execute phase
-    if target.health.percent <= 20 then
+    if target.health.percent <= 20 and spell_targets(SB.WhirlWind) < 5 then
       -- BladestormArms if we've the head or 4pc on burst
       if castable(SB.BladestormArms,target) and not player.talent(7,3) then
         if player.buff(AB.BattleCry).up and (player.tier(20) >= 4 or
@@ -132,7 +138,8 @@ local function combat()
       if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
         return CancelUnitBuff("player", AB.BladestormArms)
       end
-    else then -- Rest of the time
+
+    if player.target.health.percent > 20 then -- Rest of the time
 
       -- If we have the head or the 4pc and we're bursting - cast BS
       if not player.talent(7,3) then
@@ -232,13 +239,13 @@ local function combat()
       end
 
       -- WhirlWind if we don't have the FoB talent
-      if player.talent(5,1) and --[[ check for WW targent > 1 ]]
+      if (player.talent(5,1) or spell_targets(SB.WhirlWind) > 1) and
       castable(SB.WhirlWind,target) then
         return cast(SB.WhirlWind,target)
       end
 
       -- cast slam when we don't have FoB have 52rage, not rend or not ravager
-      if not player.talent(5,1) --[[ check for WW targets = 1 ]] then
+      if not player.talent(5,1) spell_targets(SB.WhirlWind) == 1 then
         if (player.power.rage.actual >= 52 or not player.talent(3,2)
         or not player.talent(7,3)) and castable(SB.Slam,target)
         then
