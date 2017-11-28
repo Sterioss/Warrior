@@ -245,7 +245,7 @@ local function combat()
       end
 
       -- cast slam when we don't have FoB have 52rage, not rend or not ravager
-      if not player.talent(5,1) spell_targets(SB.WhirlWind) == 1 then
+      if not player.talent(5,1) and spell_targets(SB.WhirlWind) == 1 then
         if (player.power.rage.actual >= 52 or not player.talent(3,2)
         or not player.talent(7,3)) and castable(SB.Slam,target)
         then
