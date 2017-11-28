@@ -1,9 +1,14 @@
 
+local engine = ...
 local function combat()
+  if not config('main', 'enable') then return end
   local inInstance, instanceType = IsInInstance()
-
   if instanceType ~= "pvp" and instanceType ~= "arena" then
     if target.alive and target.enemy then
+      if not IsCurrentSpell(6603) then
+        StartAttack("target")
+      end
+
       -- racials checks
       if player.race == 'Orc' then
         if castable(SB.BloodFury,target) and (player.buff(AB.BattleCry).up or
@@ -21,6 +26,17 @@ local function combat()
           and player.spell(SB.BattleCry).cooldown ~= 0 then
             return cast(SB.ArcaneTorrent,target)
           end
+      end
+
+      -- Avatar checks
+      if castable(SB.Avatar,target) then
+        if target.timetodie <= 20 then
+          return cast(SB.Avatar,target)
+        end
+        if player.spell(AB.GCD).cooldown < 0.25 and (player.buff(AB.BattleCry).up
+        or player.spell(SB.BattleCry).cooldown < 15) then
+          return cast(SB.Avatar,target)
+        end
       end
 
       -- Battlecry checks
@@ -43,6 +59,14 @@ local function combat()
             return cast(SB.BattleCry,target)
           end
         end
+      end
+
+      --  cleave situation
+      if player.enemies(8,true) >= 2 and player.talent(1,3) then
+      end
+
+      -- Aoe situation
+      if player.enemies(8,true) >= 5 and player.talent(1,3) == false then
       end
 
       -- execute phase
@@ -151,7 +175,8 @@ local function combat()
         end
       end
 
-      if target.health.percent > 20 then -- Rest of the time
+      -- Rest of the time
+      if target.health.percent > 20 then
 
       -- If we have the head or the 4pc and we're bursting - cast BS
       if player.talent(7,3) == false then
@@ -295,6 +320,7 @@ local function combat()
 end
 
 local function resting()
+  if not config('main', 'enable') then return end
 end
 
 return {
