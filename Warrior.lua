@@ -1,10 +1,10 @@
-local function combat()
-  local function spell_targets(spell)
-    if spell == 'SB.WhirlWind' or spell == 'SB.BladestormArms' then
-      return player.enemies(8)
-    end
+local function spell_targets(spell)
+  if spell == 'SB.WhirlWind' or spell == 'SB.BladestormArms' then
+    return player.enemies(8)
   end
+end
 
+local function combat()
   if target.alive and target.enemy then
 
     -- racials checks
@@ -138,8 +138,9 @@ local function combat()
       if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
         return CancelUnitBuff("player", AB.BladestormArms)
       end
+    end
 
-    if player.target.health.percent > 20 then -- Rest of the time
+    if target.health.percent > 20 then -- Rest of the time
 
       -- If we have the head or the 4pc and we're bursting - cast BS
       if not player.talent(7,3) then
@@ -266,8 +267,9 @@ local function combat()
           return cast(SB.BladestormArms,target)
         end
       end
-    end
-  end
+
+    end -- End of >20%
+  end -- End of target alive
 end
 
 local function resting()
@@ -276,6 +278,7 @@ end
 return {
     combat = combat,
     resting = resting,
+    spell_targets = spell_targets,
     -- Version (major.minor.sub)
     version = '1.0.0'
   }
