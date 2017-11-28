@@ -1,12 +1,11 @@
 local function spell_targets(spell)
-  if spell == 'SB.WhirlWind' or spell == 'SB.BladestormArms' then
+  if spell == SB.WhirlWind or spell == SB.BladestormArms then
     return player.enemies(8)
   end
 end
 
 local function combat()
   if target.alive and target.enemy then
-
     -- racials checks
     if player.race == 'Orc' then
       if castable(SB.BloodFury,target) and (player.buff(AB.BattleCry).up or
