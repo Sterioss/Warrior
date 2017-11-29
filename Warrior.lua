@@ -4,8 +4,16 @@ local function combat()
   if not config('main', 'enable') then return end
   local inInstance, instanceType = IsInInstance()
   if instanceType ~= "pvp" and instanceType ~= "arena" then
+    -- Surviving seems essential
+    if UnitThreatSituation("player") > 1 then
+      if player.enemies(10) > 0 and castable(SB.DiebytheSword) then
+        return cast(SB.DiebytheSword,target)
+    end
+
     if target.alive and target.enemy then
-      if not IsCurrentSpell(6603) then
+
+      -- if we're not attacking
+      if not IsCurrentSpell(6603) and target.inmelee then
         StartAttack("target")
       end
 
@@ -321,6 +329,20 @@ end
 
 local function resting()
   if not config('main', 'enable') then return end
+
+  -- checking for dbm pulls
+  function hkEvent_CHAT_MSG_ADDON(noidea, prefix, message, channel)
+    if prefix == "D4" and string.sub(message,1,2) == "PT" then
+      timer = string.sub(message,4,5);
+      if timer <= 0.5 and target.exists and usable(127844) then
+        return use(127844)
+      end
+      if timer == 0 and target.exists and castable(SB.Charge,target) then
+        return cast(SB.Charge,target)
+      end
+    end
+  end - End of dbm Checks
+
 end
 
 return {
