@@ -1,0 +1,150 @@
+<html>
+<table class="sc">
+<tbody><tr>
+<th class="right"></th>
+<th class="right"></th>
+<th class="left">actions.aoe</th>
+</tr>
+<tr>
+<th class="right">#</th>
+<th class="right">count</th>
+<th class="left">action,conditions</th>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top">E</td>
+<td class="left" style="vertical-align:top">5.11</td>
+<td class="left">warbreaker,if=(cooldown.bladestorm.up|cooldown.bladestorm.remains&lt;=gcd)&amp;(cooldown.battle_cry.up|cooldown.battle_cry.remains&lt;=gcd)</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">bladestorm,if=buff.battle_cry.up&amp;(set_bonus.tier20_4pc|equipped.the_great_storms_eye)</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">F</td>
+<td class="left" style="vertical-align:top">12.77</td>
+<td class="left">colossus_smash,if=buff.in_for_the_kill.down&amp;talent.in_for_the_kill.enabled</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top">G</td>
+<td class="left" style="vertical-align:top">21.01</td>
+<td class="left">colossus_smash,cycle_targets=1,if=debuff.colossus_smash.down&amp;spell_targets.whirlwind&lt;=10</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">H</td>
+<td class="left" style="vertical-align:top">64.53</td>
+<td class="left">cleave,if=spell_targets.whirlwind&gt;=5</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">I</td>
+<td class="left" style="vertical-align:top">61.82</td>
+<td class="left">whirlwind,if=spell_targets.whirlwind&gt;=5&amp;buff.cleave.up</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">whirlwind,if=spell_targets.whirlwind&gt;=7</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">J</td>
+<td class="left" style="vertical-align:top">8.78</td>
+<td class="left">colossus_smash,if=buff.shattered_defenses.down</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top">K</td>
+<td class="left" style="vertical-align:top">7.98</td>
+<td class="left">execute,if=buff.stone_heart.react</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">L</td>
+<td class="left" style="vertical-align:top">47.07</td>
+<td class="left">mortal_strike,if=buff.shattered_defenses.up|buff.executioners_precision.down</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">rend,cycle_targets=1,if=remains&lt;=duration*0.3&amp;spell_targets.whirlwind&lt;=3</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">cleave</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">M</td>
+<td class="left" style="vertical-align:top">8.48</td>
+<td class="left">whirlwind</td>
+</tr>
+<table class="sc">
+<tbody><tr>
+<th class="right"></th>
+<th class="right"></th>
+<th class="left">actions.cleave</th>
+</tr>
+<tr>
+<th class="right">#</th>
+<th class="right">count</th>
+<th class="left">action,conditions</th>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">E</td>
+<td class="left" style="vertical-align:top">72.81</td>
+<td class="left">mortal_strike</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top">F</td>
+<td class="left" style="vertical-align:top">5.92</td>
+<td class="left">execute,if=buff.stone_heart.react</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top">G</td>
+<td class="left" style="vertical-align:top">38.72</td>
+<td class="left">colossus_smash,if=buff.shattered_defenses.down&amp;buff.precise_strikes.down</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">H</td>
+<td class="left" style="vertical-align:top">5.15</td>
+<td class="left">warbreaker,if=buff.shattered_defenses.down</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">focused_rage,if=rage&gt;100|buff.battle_cry_deadly_calm.up</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">whirlwind,if=talent.fervor_of_battle.enabled&amp;(debuff.colossus_smash.up|rage.deficit&lt;50)&amp;(!talent.focused_rage.enabled|buff.battle_cry_deadly_calm.up|buff.cleave.up)</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top">I</td>
+<td class="left" style="vertical-align:top">31.87</td>
+<td class="left">rend,if=remains&lt;=duration*0.3</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">bladestorm</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">J</td>
+<td class="left" style="vertical-align:top">51.17</td>
+<td class="left">cleave</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">K</td>
+<td class="left" style="vertical-align:top">16.43</td>
+<td class="left">whirlwind,if=rage&gt;40|buff.cleave.up</td>
+</tr>
+<tr>
+<td class="right" style="vertical-align:top"> </td>
+<td class="left" style="vertical-align:top">0.00</td>
+<td class="left">shockwave</td>
+</tr>
+<tr class="odd">
+<td class="right" style="vertical-align:top">L</td>
+<td class="left" style="vertical-align:top">9.63</td>
+<td class="left">storm_bolt</td>
+</tr>
+</tbody></table>
+</html>
