@@ -14,10 +14,10 @@ local function combat()
       end
     end
 
-    if target.alive and target.enemy and then
+    if target.alive and target.enemy then
 
       -- if we're not attacking
-      if not IsCurrentSpell(6603) and then
+      if not IsCurrentSpell(6603) and target.inmelee then
         StartAttack("target")
       end
 
@@ -57,7 +57,10 @@ local function combat()
         and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
           return cast(SB.BattleCry,target)
         end
-        if target.timetodie >= 70 or player.tier(20) >= 4
+        if ((UnitClassification("target") ~= "normal"
+        or UnitClassification("target") ~= "trivial"
+        or UnitClassification("target") ~= "minus") and target.timetodie >= 70)
+        or player.tier(20) >= 4
         or player.enemies(8,true) >= 2 then
           if player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager) then
             return cast(SB.BattleCry,target)
@@ -185,7 +188,7 @@ local function combat()
         end
 
         -- BladestormArms
-        if player.castable(SB.BladestormArms,target) then
+        if castable(SB.BladestormArms,target) then
           if player.buff(AB.BattleCry).up and (player.tier(20) >= 4
           or itemequipped(IB.TheGreatStormsEye)) then
             return cast(SB.BladestormArms,target)
@@ -195,7 +198,7 @@ local function combat()
         -- ColossusSmash
         if castable(SB.ColossusSmash,target)
         and player.spell(SB.Warbreaker).cooldown > 2 then
-          if player.buff(AB.InForTheKill).down and player.talent(6,2) then
+          if player.buff(SB.InForTheKill).down and player.talent(6,2) then
             return cast(SB.ColossusSmash,target)
           end
         end
@@ -211,8 +214,63 @@ local function combat()
           end
         end
 
-        -- Whirlwind
-        
+        -- Whirlwind 5
+        if castable(SB.Whirlwind,target) and
+        (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27)) then
+          if player.enemies(8) >= 5 and player.buff(AB.Cleave) then
+            return cast(SB.Whirlwind,target)
+          end
+        end
+
+        -- Whirlwind 7
+        if castable(SB.Whirlwind,target) and
+        (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27)) then
+          if player.enemies(8) >= 7 then
+            return cast(SB.Whirlwind,target)
+          end
+        end
+
+        -- ColossusSmash
+        if castable(SB.ColossusSmash,target) then
+          if player.buff(AB.ShatteredDefenses).down then
+            return cast(SB.ColossusSmash,target)
+          end
+        end
+
+        -- Execute proc
+        if itemequipped(137052) then
+          if player.buff(225947).up and castable(SB.Execute,target) then
+            return cast(SB.Execute,target)
+          end
+        end
+
+        -- MortalStrike
+        if castable(SB.MortalStrike,target) and
+        (player.power.rage.actual >= 20 or (player.talent(1,1) and
+        player.power.rage.actual >= 18)) then
+          if player.buff(AB.ShatteredDefenses).up
+          or target.debuff(242188).down then
+            return cast(SB.MortalStrike,target)
+          end
+        end
+
+        -- Rend cycle
+
+        -- Cleave
+        if castable(SB.Cleave,target) and
+        (player.power.rage.actual >= 10 or (player.talent(1,1) and
+        player.power.rage.actual >= 9)) then
+          return cast(SB.Cleave,target)
+        end
+
+        -- Whirlwind 5
+        if castable(SB.Whirlwind,target) and
+        (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27)) then
+            return cast(SB.Whirlwind,target)
+        end
 
       end
 
