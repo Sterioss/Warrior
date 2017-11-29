@@ -586,6 +586,10 @@ local function combat()
       end -- End of >20%
     end -- End of target alive
   end -- instanceType
+
+  if instancetype == "arena" then
+
+  end
 end -- Combat
 
 local function resting()
