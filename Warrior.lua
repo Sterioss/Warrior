@@ -2,6 +2,7 @@
 local engine = ...
 local function combat()
   if not config('main', 'enable') then return end
+
   local inInstance, instanceType = IsInInstance()
   if instanceType ~= "pvp" and instanceType ~= "arena" then
     -- Surviving seems essential
@@ -13,10 +14,10 @@ local function combat()
       end
     end
 
-    if target.alive and target.enemy then
+    if target.alive and target.enemy and then
 
       -- if we're not attacking
-      if not IsCurrentSpell(6603) and target.inmelee then
+      if not IsCurrentSpell(6603) and then
         StartAttack("target")
       end
 
@@ -77,10 +78,11 @@ local function combat()
       --]]
       if player.enemies(8,true) >= 2 and player.talent(1,3) then
 
+        local Ucd = 2 * (player.gcd)
         -- Warbreaker
         if castable(SB.Warbreaker,target)
         and player.spell(SB.Ravager).cooldown <= player.gcd
-        and player.spell(SB.BattleCry).cooldown <= 2(player.gcd)
+        and player.spell(SB.BattleCry).cooldown <= Ucd
         and target.inmelee then
           return cast(SB.Warbreaker,target)
         end
@@ -136,7 +138,9 @@ local function combat()
 
         -- Rend
         if castable(SB.Rend,target)
-        and target.debuff(AB.Rend).remains <= 2.4 then
+        and target.debuff(AB.Rend).remains <= 2.4 and
+        (player.power.rage.actual >= 30 or (player.talent(1,1) and
+        player.power.rage.actual >= 27)) then
           return cast(SB.Rend,target)
         end
 
@@ -146,7 +150,9 @@ local function combat()
         end
 
         -- Cleave
-        if castable(SB.Cleave,target) then
+        if castable(SB.Cleave,target) and
+        (player.power.rage.actual >= 10 or (player.talent(1,1) and
+        player.power.rage.actual >= 9)) then
           return cast(SB.Cleave,target)
         end
 
@@ -161,6 +167,53 @@ local function combat()
       --[[  AoE situation
       --]]
       if player.enemies(8,true) >= 5 and player.talent(1,3) == false then
+
+        local Ucd = 2 * (player.gcd)
+        -- Warbreaker
+        if castable(SB.Warbreaker,target)
+        and player.spell(SB.Ravager).cooldown <= player.gcd
+        and player.spell(SB.BattleCry).cooldown <= Ucd
+        and target.inmelee then
+          return cast(SB.Warbreaker,target)
+        end
+
+        -- Ravager
+        if castable(SB.Ravager,target) then
+          if lastcast(SB.Warbreaker) then
+            return cast(SB.Ravager,target)
+          end
+        end
+
+        -- BladestormArms
+        if player.castable(SB.BladestormArms,target) then
+          if player.buff(AB.BattleCry).up and (player.tier(20) >= 4
+          or itemequipped(IB.TheGreatStormsEye)) then
+            return cast(SB.BladestormArms,target)
+          end
+        end
+
+        -- ColossusSmash
+        if castable(SB.ColossusSmash,target)
+        and player.spell(SB.Warbreaker).cooldown > 2 then
+          if player.buff(AB.InForTheKill).down and player.talent(6,2) then
+            return cast(SB.ColossusSmash,target)
+          end
+        end
+
+        -- CS cycle
+
+        -- Cleave
+        if castable(SB.Cleave,target) and
+        (player.power.rage.actual >= 10 or (player.talent(1,1) and
+        player.power.rage.actual >= 9)) then
+          if player.enemies(8) >= 5 then
+            return cast(SB.Cleave,target)
+          end
+        end
+
+        -- Whirlwind
+        
+
       end
 
       --[[  Execute situation
@@ -265,7 +318,7 @@ local function combat()
         end
 
         -- BladestormArms interrupt
-        if player.buff(AB.BladestormArms).up and player.tier(20) < 4 then
+        if player.buff(SB.BladestormArms).up and player.tier(20) < 4 then
           return CancelUnitBuff("player", AB.BladestormArms)
         end
       end
