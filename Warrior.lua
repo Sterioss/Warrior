@@ -5,7 +5,8 @@ local function combat()
   local inInstance, instanceType = IsInInstance()
   if instanceType ~= "pvp" and instanceType ~= "arena" then
     -- Surviving seems essential
-    if UnitThreatSituation("player") ~= nill then
+    if UnitThreatSituation("player") ~= nill
+    and config('Warrior', 'DbtSwordA.check') then
       if UnitThreatSituation("player") > 1 then
         if player.enemies(10) > 0 and castable(SB.DiebytheSword) then
           return cast(SB.DiebytheSword,target)
@@ -422,11 +423,17 @@ local function resting()
   function hkEvent_CHAT_MSG_ADDON(noidea, prefix, message, channel)
     if prefix == "D4" and string.sub(message,1,2) == "PT" then
       timer = string.sub(message,4,5);
-      if timer <= 0.5 and target.exists and usable(127844) then
-        return use(127844)
+      if config('Warrior', 'PrePot.check') then
+        if timer <= config('Warrior', 'PrePot.spin') and target.exists
+        and usable(127844) then
+          return use(127844)
+        end
       end
-      if timer == 0 and target.exists and castable(SB.Charge,target) then
-        return cast(SB.Charge,target)
+      if config('Warrior', 'ChargeC.check') then
+        if timer <= config('Warrior', 'ChargeC.spin') and target.exists
+        and castable(SB.Charge,target) then
+          return cast(SB.Charge,target)
+        end
       end
     end
   end -- End of dbm Checks
@@ -438,4 +445,27 @@ return {
     resting = resting,
     -- Version (major.minor.sub)
     version = '1.0.0'
-  }
+    config = {
+       key = "Warrior",
+       title = "Warrior",
+       subtitle = "Arm",
+       color = "664e39",
+       profiles = true,
+       width = 250,
+       height = 400,
+       resize = false,
+       show = false,
+       template = {
+        { type = "header", justify = 'LEFT', text = '|cffFF7D0AAutomation' },
+        { type = 'checkbox', key = 'DbtSwordA',
+         text = engine.textcolor..'DbtSword on aggro', default = true },
+        { type = 'checkspin', key = 'PrePot',
+        text = engine.textcolor..'Pre-pot on DBM', default_spin = 0.5,
+        default_check = true,  min = 0.1, max = 1, step = 1},
+        { type = 'checkspin', key = 'ChargeC',
+         text = engine.textcolor..'Charge after DBM', default_spin = 0,
+        default_check = true, min = 0, max = 1, step = 1},
+
+                  }
+              }
+}
