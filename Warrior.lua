@@ -1,4 +1,3 @@
-
 local engine = ...
 local function combat()
   if not config('main', 'enable') then return end
@@ -57,9 +56,7 @@ local function combat()
         and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
           return cast(SB.BattleCry,target)
         end
-        if ((UnitClassification("target") ~= "normal"
-        or UnitClassification("target") ~= "trivial"
-        or UnitClassification("target") ~= "minus") and target.timetodie >= 70)
+        if target.timetodie >= 70
         or player.tier(20) >= 4
         or player.enemies(8,true) >= 2 then
           if player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager) then
@@ -300,7 +297,8 @@ local function combat()
             end
           end -- castable ColossusSmash
           -- or go for warkreaker
-          if castable(SB.Warbreaker,target) and target.inmelee then
+          if castable(SB.Warbreaker,target)
+          and target.inmelee then
             if player.spell(SB.MortalStrike).cooldown <=
             player.spell(AB.GCD).cooldown
             and target.debuff(242188).count == 2 then
@@ -381,8 +379,8 @@ local function combat()
         end
       end
 
-      --[[  ST situation
-      --]]
+      --[[  ST situation - Todo : check for instancetype with WA - burst on
+      --]] -- non normal but still burst on warbreaker or ravger 
       if target.health.percent > 20 then
 
         -- If we have the head or the 4pc and we're bursting - cast BS
@@ -399,7 +397,7 @@ local function combat()
           if castable(SB.ColossusSmash,target) then
             return cast(SB.ColossusSmash,target)
           end
-          if castable(SB.Warbreaker,target) and target.inmelee then
+          if castable(SB.Warbreaker,target) and player.enemies(5)>0 then
             if (player.buff(225947).up or player.spell(SB.MortalStrike).cooldown <=
             player.spell(61304).cooldown) and player.talent(5,1) == false then
               return cast(SB.Warbreaker,target)
