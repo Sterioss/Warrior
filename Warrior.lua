@@ -431,6 +431,11 @@ local function combat()
       --]] -- non normal but still burst on warbreaker or ravger
       if target.health.percent > 20 then
 
+        -- Ravager if we just used warbreaker
+        if castable(SB.Ravager,target) and lastcast(SB.Warbreaker) then
+          return cast(SB.Ravager,target)
+        end
+
         -- If we have the head or the 4pc and we're bursting - cast BS
         if player.talent(7,3) == false then
           if player.buff(AB.BattleCry).up and
@@ -500,10 +505,6 @@ local function combat()
             if player.spell(SB.BattleCry).cooldown <= player.gcd
             and target.debuff(AB.ColossusSmash).duration > 6
             then
-              return cast(SB.Ravager,target)
-            end
-          else
-            if lastcast(SB.Warbreaker) then
               return cast(SB.Ravager,target)
             end
           end
