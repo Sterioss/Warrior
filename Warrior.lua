@@ -1,9 +1,37 @@
 local engine = ...
+local spread = target
 local function combat()
   if not config('main', 'enable') then return end
 
+  for unit in manager(
+  function(object) -- Open an object manager.
+    return UnitCanAttack('player', object)
+    and not UnitIsUnit('player', object) and UnitAffectingCombat(object)
+  end) -- we are done searching now
+  do
+    if unit then --if we have the unit lets use it.
+      spred = object(unit) or target
+      end
+    end
+  end
+
   local inInstance, instanceType = IsInInstance()
+
   if instanceType ~= "pvp" and instanceType ~= "arena" then
+
+    if not target.exists then
+      for unit in manager(function(object)
+                return UnitCanAttack('player', object)
+                and not UnitIsUnit('player', object) end
+      do
+        if unit.inmelee then
+          if UnitAffectingCombat(unit)
+            return TargetUnit(unit)
+          end
+        end
+      end
+    end
+
     -- Surviving seems essential
     if UnitThreatSituation("player") ~= nill then
       if UnitThreatSituation("player") > 1 then
