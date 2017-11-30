@@ -1,5 +1,6 @@
 local engine = ...
 local spread = target
+local newtarget = target
 local function combat()
   if not config('main', 'enable') then return end
 
@@ -17,17 +18,20 @@ local function combat()
 
   if instanceType ~= "pvp" and instanceType ~= "arena" then
 
-    if not UnitExists("target") then
+    if (not target.enemy or not target.alive or player.distance(target)>= 5) then
       for unit in manager(
       function(object)
         return UnitCanAttack('player', object)
         and not UnitIsUnit('player', object)
-      end) do
+        and GetDistanceBetweenObjects("player", object) <= 5
+      end)
+      do
         if unit then
-          if UnitAffectingCombat(unit) then
-            return TargetUnit(object(unit))
-          end
+          newtarget = object(unit)
         end
+      end
+      if newtarget then
+        TargetUnit(newtarget.guid)
       end
     end
 
