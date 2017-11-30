@@ -17,15 +17,15 @@ local function combat()
 
   if instanceType ~= "pvp" and instanceType ~= "arena" then
 
-    if not target.exists then
+    if not UnitExists("target") then
       for unit in manager(
       function(object)
         return UnitCanAttack('player', object)
         and not UnitIsUnit('player', object)
       end) do
-        if unit.inmelee then
+        if unit then
           if UnitAffectingCombat(unit) then
-            return TargetUnit(unit)
+            return TargetUnit(object(unit))
           end
         end
       end
@@ -79,8 +79,8 @@ local function combat()
 
       -- Battlecry checks
       if castable(SB.BattleCry,target) then
-        if (UnitClassification("target") == "rareelite"
-        or "worldboss" or "elite" or "rare") then
+        if (UnitClassification("target") == ("rareelite"
+        or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
           if target.debuff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
           and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
             return cast(SB.BattleCry,target)
@@ -224,13 +224,13 @@ local function combat()
 
         -- Warbreaker
         if castable(SB.Warbreaker,target) then
-          if (UnitClassification("target") == "rareelite"
-          or "worldboss" or "elite" or "rare") then
+          if (UnitClassification("target") == ("rareelite"
+          or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
             if (player.spell(SB.BladestormArms).cooldown == 0
             or player.spell(SB.BladestormArms).cooldown <= player.gcd)
             and (player.spell(SB.BattleCry).cooldown == 0
             or player.spell(SB.BattleCry).cooldown <= player.gcd)
-            and player.enemies(7)>0 then
+            and player.enemies(7,true)>0 then
               return cast(SB.Warbreaker,target)
             end
           end
@@ -246,8 +246,8 @@ local function combat()
 
         -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
         if player.talent(7,3) and castable(SB.Ravager,target) then
-          if (UnitClassification("target") == "rareelite"
-          or "worldboss" or "elite" or "rare") then
+          if (UnitClassification("target") == ("rareelite"
+          or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
             if player.spell(SB.BattleCry).cooldown <= player.gcd
             and target.debuff(AB.ColossusSmash).duration > 6
             then
@@ -274,7 +274,7 @@ local function combat()
         if castable(SB.Cleave,target) and
         (player.power.rage.actual >= 10 or (player.talent(1,1) and
         player.power.rage.actual >= 9)) then
-          if player.enemies(8) >= 5 then
+          if player.enemies(8,true) >= 5 then
             return cast(SB.Cleave,target)
           end
         end
@@ -283,7 +283,7 @@ local function combat()
         if castable(SB.Whirlwind,target) and
         (player.power.rage.actual >= 30 or (player.talent(1,1) and
         player.power.rage.actual >= 27)) then
-          if player.enemies(8) >= 5 and player.buff(AB.Cleave) then
+          if player.enemies(8,true) >= 5 and player.buff(AB.Cleave) then
             return cast(SB.Whirlwind,target)
           end
         end
@@ -292,7 +292,7 @@ local function combat()
         if castable(SB.Whirlwind,target) and
         (player.power.rage.actual >= 30 or (player.talent(1,1) and
         player.power.rage.actual >= 27)) then
-          if player.enemies(8) >= 7 then
+          if player.enemies(8,true) >= 7 then
             return cast(SB.Whirlwind,target)
           end
         end
@@ -350,8 +350,8 @@ local function combat()
 
         -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
         if player.talent(7,3) and castable(SB.Ravager,target) then
-          if (UnitClassification("target") == "rareelite"
-          or "worldboss" or "elite" or "rare") then
+          if (UnitClassification("target") == ("rareelite"
+          or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
             if player.spell(SB.BattleCry).cooldown <= player.gcd
             and target.debuff(AB.ColossusSmash).duration > 6
             then
@@ -373,13 +373,11 @@ local function combat()
         end
 
         -- Warbreaker
-        if castable(SB.Warbreaker,target) then
-          if castable(SB.Warbreaker,target) then
-            if (UnitClassification("target") == "rareelite"
-            or "worldboss" or "elite" or "rare") then
-              if player.buff(AB.ShatteredDefenses).down then
-                return cast(SB.Warbreaker,target)
-              end
+        if castable(SB.Warbreaker,target) and player.enemies(7,true)>0 then
+          if (UnitClassification("target") == ("rareelite"
+          or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
+            if player.buff(AB.ShatteredDefenses).down then
+              return cast(SB.Warbreaker,target)
             end
           end
         end
@@ -447,19 +445,17 @@ local function combat()
           if castable(SB.ColossusSmash,target) then
             return cast(SB.ColossusSmash,target)
           end
-          if castable(SB.Warbreaker,target) and player.enemies(7) > 0 then
-            if castable(SB.Warbreaker,target) then
-              if (UnitClassification("target") == "rareelite"
-              or "worldboss" or "elite" or "rare") then
-                if (player.buff(225947).up
-                or player.spell(SB.MortalStrike).cooldown <= player.spell(61304).cooldown)
-                and player.talent(5,1) == false then
-                  return cast(SB.Warbreaker,target)
-                end
-                if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
-                < player.gcd) then
-                  return cast(SB.Warbreaker,target)
-                end
+          if castable(SB.Warbreaker,target) and player.enemies(7,true) > 0 then
+            if (UnitClassification("target") == ("rareelite"
+            or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
+              if (player.buff(225947).up
+              or player.spell(SB.MortalStrike).cooldown <= player.spell(61304).cooldown)
+              and player.talent(5,1) == false then
+                return cast(SB.Warbreaker,target)
+              end
+              if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
+              < player.gcd) then
+                return cast(SB.Warbreaker,target)
               end
             end
           end
@@ -499,18 +495,16 @@ local function combat()
 
         -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
         if player.talent(7,3) and castable(SB.Ravager,target) then
-          if castable(SB.Warbreaker,target) then
-            if (UnitClassification("target") == "rareelite"
-            or "worldboss" or "elite" or "rare") then
-              if player.spell(SB.BattleCry).cooldown <= player.gcd
-              and target.debuff(AB.ColossusSmash).duration > 6
-              then
-                return cast(SB.Ravager,target)
-              end
-            else
-              if lastcast(SB.Warbreaker) then
-                return cast(SB.Ravager,target)
-              end
+          if (UnitClassification("target") == ("rareelite"
+          or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
+            if player.spell(SB.BattleCry).cooldown <= player.gcd
+            and target.debuff(AB.ColossusSmash).duration > 6
+            then
+              return cast(SB.Ravager,target)
+            end
+          else
+            if lastcast(SB.Warbreaker) then
+              return cast(SB.Ravager,target)
             end
           end
         end
