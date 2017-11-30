@@ -590,24 +590,42 @@ end -- Combat
 local function resting()
   if not config('main', 'enable') then return end
 
-  -- checking for dbm pulls
-  function hkEvent_CHAT_MSG_ADDON(noidea, prefix, message, channel)
-    if prefix == "D4" and string.sub(message,1,2) == "PT" then
-      timer = string.sub(message,4,5);
-      if timer <= 0.5 and target.exists and usable(127844) then
-        return use(127844)
-      end
-      if timer == 0 and target.exists and castable(SB.Charge,target) then
-        return cast(SB.Charge,target)
+  f = CreateFrame("Frame")
+  f:RegisterEvent("CHAT_MSG_ADDON")
+  f:SetScript("OnEvent", pullTimerOnEvent)
+  local function pullTimerOnEvent(self, event, prefix, message, channel, sender)
+    if prefix == "D4" and sub(message, 1, 2) == "PT" then
+      local _, timer = strsplit("\t", message)
+      addonName = "DBM"
+      print(timer)
+    end
+    if prefix == "BigWigs" then
+      local bwPrefix, bwMsg = message:match("^(%u-):(.+)")
+      if bwPrefix == "T" then
+        local _, timer = strsplit("", bwMsg)
+        addonName = "BW"
+        print(timer)
       end
     end
-  end -- End of dbm Checks
-
+  end
 end
-
 return {
   combat = combat,
   resting = resting,
   -- Version (major.minor.sub)
-  version = '1.0.0'
+  version = '1.0.0',
+  config = {
+    key = "armWarrior",
+    title = "My Warrior",
+    profiles = true,
+    width = 250,
+    height = 400,
+    resize = false,
+    show = false,
+    template = {
+        { type = "header", justify = 'LEFT', text = 'Utility'},
+        { type = 'checkbox', key = 'dbts_pve',
+         text = 'Die By the Sword on aggro', default = true },
+    }
+  }
 }
