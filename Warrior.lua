@@ -7,11 +7,9 @@ local function combat()
   function(object) -- Open an object manager.
     return UnitCanAttack('player', object)
     and not UnitIsUnit('player', object) and UnitAffectingCombat(object)
-  end) -- we are done searching now
-  do
+  end) do
     if unit then --if we have the unit lets use it.
       spred = object(unit) or target
-      end
     end
   end
 
@@ -20,12 +18,13 @@ local function combat()
   if instanceType ~= "pvp" and instanceType ~= "arena" then
 
     if not target.exists then
-      for unit in manager(function(object)
-                return UnitCanAttack('player', object)
-                and not UnitIsUnit('player', object) end
-      do
+      for unit in manager(
+      function(object)
+        return UnitCanAttack('player', object)
+        and not UnitIsUnit('player', object)
+      end) do
         if unit.inmelee then
-          if UnitAffectingCombat(unit)
+          if UnitAffectingCombat(unit) then
             return TargetUnit(unit)
           end
         end
@@ -54,17 +53,17 @@ local function combat()
         target.timetodie <= 16) then
           return cast(SB.BloodFury,target)
         end
-        elseif player.race == 'Troll' then
-          if castable(26297,target) and (player.buff(AB.BattleCry).up or
-          target.timetodie <= 11) then
-            return cast(26297,target)
-          end
-        elseif player.race == 'BloodElf' then
-          if castable(SB.ArcaneTorrent,target) and player.buff(227266).down and
-          player.power.rage.deficit > 40
-          and player.spell(SB.BattleCry).cooldown ~= 0 then
-            return cast(SB.ArcaneTorrent,target)
-          end
+      elseif player.race == 'Troll' then
+        if castable(26297,target) and (player.buff(AB.BattleCry).up or
+        target.timetodie <= 11) then
+          return cast(26297,target)
+        end
+      elseif player.race == 'BloodElf' then
+        if castable(SB.ArcaneTorrent,target) and player.buff(227266).down and
+        player.power.rage.deficit > 40
+        and player.spell(SB.BattleCry).cooldown ~= 0 then
+          return cast(SB.ArcaneTorrent,target)
+        end
       end
 
       -- Avatar checks
@@ -80,23 +79,32 @@ local function combat()
 
       -- Battlecry checks
       if castable(SB.BattleCry,target) then
-        if target.debuff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
-        and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
-          return cast(SB.BattleCry,target)
-        end
-        if ((UnitClassification("target") == "rareelite"
-        or "worldboss" or "elite" or "rare") and target.timetodie >= 70)
-        or player.tier(20) >= 4 or player.enemies(8,true) >= 2 then
+        if (UnitClassification("target") == "rareelite"
+        or "worldboss" or "elite" or "rare") then
+          if target.debuff(242188).count == 2 and player.buff(AB.ShatteredDefenses).up
+          and player.spell(AB.GCD).cooldown == 0 and player.tier(20) < 4 then
+            return cast(SB.BattleCry,target)
+          end
+          if target.timetodie >= 70 or player.tier(20) >= 4 then
+            if player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager) then
+              return cast(SB.BattleCry,target)
+            end
+            if player.talent(7,3) == false
+            and player.spell(AB.GCD).cooldown == 0 and
+            target.debuff(AB.ColossusSmash).remains >= 5 and
+            (player.spell(SB.BladestormArms).cooldown == 0
+            or player.tier(20) < 4) and (player.talent(3,2) == false
+            or target.debuff(AB.Rend).remains > 4)
+            then
+              return cast(SB.BattleCry,target)
+            end
+          end
+        else
           if player.spell(AB.GCD).cooldown <= 0.5 and lastcast(SB.Ravager) then
             return cast(SB.BattleCry,target)
           end
-          if player.talent(7,3) == false
-          and player.spell(AB.GCD).cooldown == 0 and
-          target.debuff(AB.ColossusSmash).remains >= 5 and
-          (player.spell(SB.BladestormArms).cooldown == 0
-          or player.tier(20) < 4) and (player.talent(3,2) == false
-          or target.debuff(AB.Rend).remains > 4)
-          then
+          if not player.talent(7,3) and lastcast(SB.Warbreaker)
+          and player.spell(AB.GCD).cooldown <= 0.5 then
             return cast(SB.BattleCry,target)
           end
         end
@@ -215,13 +223,17 @@ local function combat()
       if player.enemies(8,true) >= 4 then
 
         -- Warbreaker
-        if castable(SB.Warbreaker,target)
-        and (player.spell(SB.BladestormArms).cooldown == 0
-        or player.spell(SB.BladestormArms).cooldown <= player.gcd)
-        and (player.spell(SB.BattleCry).cooldown == 0
-        or player.spell(SB.BattleCry).cooldown <= player.gcd)
-        and player.enemies(7)>0 then
-          return cast(SB.Warbreaker,target)
+        if castable(SB.Warbreaker,target) then
+          if (UnitClassification("target") == "rareelite"
+          or "worldboss" or "elite" or "rare") then
+            if (player.spell(SB.BladestormArms).cooldown == 0
+            or player.spell(SB.BladestormArms).cooldown <= player.gcd)
+            and (player.spell(SB.BattleCry).cooldown == 0
+            or player.spell(SB.BattleCry).cooldown <= player.gcd)
+            and player.enemies(7)>0 then
+              return cast(SB.Warbreaker,target)
+            end
+          end
         end
 
         -- BladestormArms
@@ -234,10 +246,17 @@ local function combat()
 
         -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
         if player.talent(7,3) and castable(SB.Ravager,target) then
-          if player.spell(SB.BattleCry).cooldown <= player.gcd
-          and target.debuff(AB.ColossusSmash).duration > 6
-          then
-            return cast(SB.Ravager,target)
+          if (UnitClassification("target") == "rareelite"
+          or "worldboss" or "elite" or "rare") then
+            if player.spell(SB.BattleCry).cooldown <= player.gcd
+            and target.debuff(AB.ColossusSmash).duration > 6
+            then
+              return cast(SB.Ravager,target)
+            end
+          else
+            if lastcast(SB.Warbreaker) then
+              return cast(SB.Ravager,target)
+            end
           end
         end
 
@@ -315,7 +334,7 @@ local function combat()
         if castable(SB.Whirlwind,target) and
         (player.power.rage.actual >= 30 or (player.talent(1,1) and
         player.power.rage.actual >= 27)) then
-            return cast(SB.Whirlwind,target)
+          return cast(SB.Whirlwind,target)
         end
       end
 
@@ -331,10 +350,17 @@ local function combat()
 
         -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
         if player.talent(7,3) and castable(SB.Ravager,target) then
-          if player.spell(SB.BattleCry).cooldown <= player.gcd
-          and target.debuff(AB.ColossusSmash).duration > 6
-          then
-            return cast(SB.Ravager,target)
+          if (UnitClassification("target") == "rareelite"
+          or "worldboss" or "elite" or "rare") then
+            if player.spell(SB.BattleCry).cooldown <= player.gcd
+            and target.debuff(AB.ColossusSmash).duration > 6
+            then
+              return cast(SB.Ravager,target)
+            end
+          else
+            if lastcast(SB.Warbreaker) then
+              return cast(SB.Ravager,target)
+            end
           end
         end
 
@@ -348,8 +374,13 @@ local function combat()
 
         -- Warbreaker
         if castable(SB.Warbreaker,target) then
-          if player.buff(AB.ShatteredDefenses).down then
-            return cast(SB.Warbreaker,target)
+          if castable(SB.Warbreaker,target) then
+            if (UnitClassification("target") == "rareelite"
+            or "worldboss" or "elite" or "rare") then
+              if player.buff(AB.ShatteredDefenses).down then
+                return cast(SB.Warbreaker,target)
+              end
+            end
           end
         end
 
@@ -417,14 +448,19 @@ local function combat()
             return cast(SB.ColossusSmash,target)
           end
           if castable(SB.Warbreaker,target) and player.enemies(7) > 0 then
-            if (player.buff(225947).up
-            or player.spell(SB.MortalStrike).cooldown <= player.spell(61304).cooldown)
-            and player.talent(5,1) == false then
-              return cast(SB.Warbreaker,target)
-            end
-            if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
-            < player.gcd) then
-              return cast(SB.Warbreaker,target)
+            if castable(SB.Warbreaker,target) then
+              if (UnitClassification("target") == "rareelite"
+              or "worldboss" or "elite" or "rare") then
+                if (player.buff(225947).up
+                or player.spell(SB.MortalStrike).cooldown <= player.spell(61304).cooldown)
+                and player.talent(5,1) == false then
+                  return cast(SB.Warbreaker,target)
+                end
+                if (player.talent(5,1) and target.debuff(AB.ColossusSmash).remains
+                < player.gcd) then
+                  return cast(SB.Warbreaker,target)
+                end
+              end
             end
           end
         end
@@ -463,10 +499,19 @@ local function combat()
 
         -- If burst CD is <= to the GCD and we're fine with CS debuff - cast Ravager
         if player.talent(7,3) and castable(SB.Ravager,target) then
-          if player.spell(SB.BattleCry).cooldown <= player.gcd
-          and target.debuff(AB.ColossusSmash).duration > 6
-          then
-            return cast(SB.Ravager,target)
+          if castable(SB.Warbreaker,target) then
+            if (UnitClassification("target") == "rareelite"
+            or "worldboss" or "elite" or "rare") then
+              if player.spell(SB.BattleCry).cooldown <= player.gcd
+              and target.debuff(AB.ColossusSmash).duration > 6
+              then
+                return cast(SB.Ravager,target)
+              end
+            else
+              if lastcast(SB.Warbreaker) then
+                return cast(SB.Ravager,target)
+              end
+            end
           end
         end
 
@@ -562,8 +607,8 @@ local function resting()
 end
 
 return {
-    combat = combat,
-    resting = resting,
-    -- Version (major.minor.sub)
-    version = '1.0.0'
-  }
+  combat = combat,
+  resting = resting,
+  -- Version (major.minor.sub)
+  version = '1.0.0'
+}
