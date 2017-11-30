@@ -31,7 +31,7 @@ local function combat()
         end
       end
       if newtarget then
-        TargetUnit(newtarget.guid)
+        TargetUnit(newtarget.name)
       end
     end
 
