@@ -1,6 +1,18 @@
 local engine = ...
 local spread = target
 local newtarget = target
+local addonName = nil
+local match, sub, gsub = string.match, string.sub, string.gsub
+local type, tonumber = type, tonumber
+local pullTimeStart = 0
+local pullTiming = nil
+
+function round(num, numDecimalPlaces)
+    local mult = 10^(numDecimalPlaces or 0)
+    if num >= 0 then return math.floor(num * mult + 0.5) / mult
+    else return math.ceil(num * mult - 0.5) / mult end
+end
+
 local function combat()
   if not config('main', 'enable') then return end
 
@@ -590,26 +602,46 @@ end -- Combat
 local function resting()
   if not config('main', 'enable') then return end
 
-  f = CreateFrame("Frame")
+  local f = CreateFrame("Frame")
   f:RegisterEvent("CHAT_MSG_ADDON")
-  f:SetScript("OnEvent", pullTimerOnEvent)
+
+  local function handleMessage(timer, addon, sender)
+    if not tonumber(timer) then return end
+    timer = tonumber(match(timer, "%d+"))
+    if timer > 0 then
+      if pullTimeStart ~= GetTime() then
+        pullTimeStart = GetTime() + timer
+      end
+    else
+      print("Nothing going on")
+    end
+  end
+
   local function pullTimerOnEvent(self, event, prefix, message, channel, sender)
     if prefix == "D4" and sub(message, 1, 2) == "PT" then
       local _, timer = strsplit("\t", message)
       addonName = "DBM"
-      print(timer)
+      handleMessage(timer, addon, sender)
     end
     if prefix == "BigWigs" then
       local bwPrefix, bwMsg = message:match("^(%u-):(.+)")
       if bwPrefix == "T" then
         local _, timer = strsplit("", bwMsg)
         addonName = "BW"
-        print(timer)
+        handleMessage(timer, addon, sender)
       end
     end
   end
+  f:SetScript("OnEvent", pullTimerOnEvent)
+
+if pullTimeStart >= GetTime() then
+  pullTiming = pullTimeStart - GetTime()
+  print(round(pullTiming,1))
+end
+
 end
 return {
+  round = round,
   combat = combat,
   resting = resting,
   -- Version (major.minor.sub)
@@ -623,9 +655,9 @@ return {
     resize = false,
     show = false,
     template = {
-        { type = "header", justify = 'LEFT', text = 'Utility'},
-        { type = 'checkbox', key = 'dbts_pve',
-         text = 'Die By the Sword on aggro', default = true },
+      { type = "header", justify = 'LEFT', text = 'Utility'},
+      { type = 'checkbox', key = 'dbts_pve',
+      text = 'Die By the Sword on aggro', default = true },
     }
   }
 }
