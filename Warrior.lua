@@ -448,8 +448,14 @@ local function combat()
       if target.health.percent > 20 then
 
         -- Ravager if we just used warbreaker
-        if castable(SB.Ravager,target) and lastcast(SB.Warbreaker) then
-          return cast(SB.Ravager,target)
+        if player.talent(7,3) and castable(SB.Ravager,target) then
+          if not (UnitClassification("target") == ("rareelite"
+          or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1)
+          then
+            if lastcast(SB.Warbreaker) then
+              return cast(SB.Ravager,target)
+            end
+          end
         end
 
         -- If we have the head or the 4pc and we're bursting - cast BS
