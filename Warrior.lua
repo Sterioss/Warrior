@@ -8,9 +8,9 @@ local pullTimeStart = 0
 local pullTiming = nil
 
 function round(num, numDecimalPlaces)
-    local mult = 10^(numDecimalPlaces or 0)
-    if num >= 0 then return math.floor(num * mult + 0.5) / mult
-    else return math.ceil(num * mult - 0.5) / mult end
+  local mult = 10^(numDecimalPlaces or 0)
+  if num >= 0 then return math.floor(num * mult + 0.5) / mult
+  else return math.ceil(num * mult - 0.5) / mult end
 end
 
 local function combat()
@@ -42,7 +42,7 @@ local function combat()
           newtarget = object(unit)
         end
       end
-      if newtarget then
+      if newtarget and newtarget.alive then
         TargetUnit(newtarget.name)
       end
     end
@@ -90,6 +90,16 @@ local function combat()
         if player.spell(AB.GCD).cooldown < 0.25 and (player.buff(AB.BattleCry).up
         or player.spell(SB.BattleCry).cooldown < 15) then
           return cast(SB.Avatar,target)
+        end
+      end
+
+      -- Potion on fight
+      if (UnitClassification("target") == ("rareelite"
+      or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
+        if (not player.talent(3,3) or player.buff(AB.Avatar).up)
+        and player.buff(AB.BattleCry).up and target.debuff(AB.ColossusSmash)
+        or target.timetodie <= 26 and usable(127844) then
+          return use(127844)
         end
       end
 
@@ -154,10 +164,13 @@ local function combat()
           -- or go for warkreaker
           if castable(SB.Warbreaker,target)
           and target.inmelee then
-            if player.spell(SB.MortalStrike).cooldown <=
-            player.spell(AB.GCD).cooldown
-            and target.debuff(242188).count == 2 then
-              return cast(SB.Warbreaker,target)
+            if (UnitClassification("target") == ("rareelite"
+            or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
+              if player.spell(SB.MortalStrike).cooldown <=
+              player.spell(AB.GCD).cooldown
+              and target.debuff(242188).count == 2 then
+                return cast(SB.Warbreaker,target)
+              end
             end
           end -- castable warkreaker
         end -- ShatteredDefenses down
@@ -183,10 +196,17 @@ local function combat()
         end
 
         -- Ravager
-        if castable(SB.Ravager,target) then
-          if player.spell(SB.Ravager).cooldown <= player.gcd and
-          target.debuff(AB.ColossusSmash).remains > 6 then
-            return cast(SB.Ravager,target)
+        if castable(SB.Ravager,target) and player.talent(7,3) then
+          if (UnitClassification("target") == ("rareelite"
+          or "worldboss" or "elite" or "rare") or UnitLevel("target") == -1) then
+            if player.spell(SB.Ravager).cooldown <= player.gcd and
+            target.debuff(AB.ColossusSmash).remains > 6 then
+              return cast(SB.Ravager,target)
+            end
+          else
+            if lastcast(SB.Warbreaker) then
+              return cast(SB.Ravager,target)
+            end
           end
         end
 
@@ -640,10 +660,10 @@ local function resting()
   end
   f:SetScript("OnEvent", pullTimerOnEvent)
 
-if pullTimeStart >= GetTime() then
-  pullTiming = pullTimeStart - GetTime()
-  print(round(pullTiming,1))
-end
+  if pullTimeStart >= GetTime() then
+    pullTiming = pullTimeStart - GetTime()
+    print(round(pullTiming,1))
+  end
 
 end
 return {
